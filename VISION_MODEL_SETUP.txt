@@ -1,0 +1,76 @@
+╔══════════════════════════════════════════════════════════════╗
+║          VISION MODEL BACKUP SETUP (OPTIONAL)                ║
+╚══════════════════════════════════════════════════════════════╝
+
+The app uses Gemini AI as the primary meal analysis service.
+If Gemini fails or is unavailable, it will automatically fall back to
+a local vision model (rtqVLM-0.5B) that can actually see the meal images.
+
+═══════════════════════════════════════════════════════════════
+
+SETUP INSTRUCTIONS:
+
+1. Install Python Dependencies:
+   pip install transformers torch pillow
+
+2. Model Location:
+   The default model path is:
+   C:\Users\r3nzd\Desktop\rtqvlmllm\rusetiq\rtqVLM-0.5B
+   
+   To use a different path, set environment variable:
+   VISION_MODEL_PATH=C:\path\to\your\model
+
+3. Verify Python Installation:
+   python --version  (should be Python 3.7+)
+   
+   Or:
+   python3 --version
+
+4. Test the Vision Model Service:
+   python server/services/visionModelService.py <path_to_image>
+
+═══════════════════════════════════════════════════════════════
+
+HOW IT WORKS:
+
+1. Primary: Gemini AI (if API key is configured)
+   → Fast, cloud-based analysis
+   → Requires internet connection
+   → Requires GEMINI_API_KEY in server/.env
+
+2. Backup: Local Vision Model (rtqVLM-0.5B)
+   → Works offline
+   → Actually sees the meal image
+   → No API key needed
+   → Requires Python + transformers library
+
+3. Fallback: Mock Data
+   → If both fail, uses intelligent mock data
+   → Still provides nutritional insights
+
+═══════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING:
+
+Issue: "Missing dependencies" error
+Fix: pip install transformers torch pillow
+
+Issue: "Model path not found"
+Fix: Set VISION_MODEL_PATH environment variable to correct path
+
+Issue: "Python not found"
+Fix: Install Python 3.7+ and ensure it's in PATH
+
+Issue: Vision model is slow
+Note: First run loads the model (may take 30-60 seconds)
+      Subsequent runs are faster
+
+═══════════════════════════════════════════════════════════════
+
+NOTES:
+
+- The vision model will automatically be used if Gemini fails
+- No configuration needed if model is at default path
+- Vision model provides actual image analysis (not mock data)
+- Model requires GPU for best performance (CPU works but slower)
+

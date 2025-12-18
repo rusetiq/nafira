@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #1b1b1b;
+  color: #f8fafc;
+  min-height: 100vh;
+  background-image:
+      linear-gradient(135deg, rgba(245, 71, 3, 0.08) 25%, transparent 25%, transparent 50%, rgba(245, 71, 3, 0.08) 50%, rgba(245, 71, 3, 0.08) 75%, transparent 75%, transparent),
+      linear-gradient(135deg, rgba(253, 139, 93, 0.09) 25%, transparent 25%, transparent 50%, rgba(253, 139, 93, 0.09) 50%, rgba(253, 139, 93, 0.09) 75%, transparent 75%, transparent),
+      radial-gradient(circle at 0% 0%, rgba(255, 194, 153, 0.15), transparent 55%),
+      linear-gradient(140deg, #1b1b1b, #2f2f2f 60%, #1b1b1b);
+  background-size: 4px 4px, 4px 4px, 100% 100%, 100% 100%;
+}
+
+.app-shell {
+  background: radial-gradient(circle at top, rgba(255, 117, 24, 0.12), transparent 40%), rgba(7, 7, 7, 0.9);
+  min-height: 100vh;
+}
+
+@layer components {
+  .shiny-text {
+    @apply relative inline-flex items-center overflow-hidden font-display;
+    background: linear-gradient(120deg, #fff, #FD8B5D, #f54703, #fff);
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: shine 6s linear infinite;
+  }
+
+  .gradient-text {
+    @apply font-semibold;
+    background: linear-gradient(110deg, #FFC299, #FD8B5D, #f54703);
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .magic-bento {
+    @apply rounded-3xl border border-white/10 bg-gradient-to-br from-neutral-900/60 via-neutral-900/30 to-neutral-800/40 p-6 shadow-2xl backdrop-blur-xl transition-all duration-500;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+  }
+
+  .magic-bento:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 30px 55px rgba(0, 0, 0, 0.55), 0 0 25px rgba(253, 139, 93, 0.35);
+  }
+
+  .spotlight-card {
+    @apply relative overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/70 p-5 shadow-lg backdrop-blur;
+  }
+
+  .spotlight-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top, rgba(253, 139, 93, 0.25), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .spotlight-card:hover::before,
+  .spotlight-card:focus-within::before {
+    opacity: 1;
+  }
+
+  .fluid-glass {
+    @apply rounded-3xl border border-white/15 bg-white/5 p-8 text-white shadow-2xl backdrop-blur-2xl;
+  }
+}
+
+.target-cursor {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border: 1px solid rgba(255, 194, 153, 0.7);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: target-dance 4s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes target-dance {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.7;
+  }
+  25% {
+    transform: translate(40px, -10px) scale(1.15);
+  }
+  50% {
+    transform: translate(-10px, 35px) scale(0.85);
+  }
+  75% {
+    transform: translate(35px, 20px) scale(1.05);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(245, 71, 3, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(255, 194, 153, 0.55);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1b1b1b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#f54703, #FD8B5D);
+  border-radius: 999px;
+}
