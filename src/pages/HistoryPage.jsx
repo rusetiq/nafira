@@ -5,6 +5,7 @@ import GradientText from '../components/GradientText';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart } from 'recharts';
 import DitheredBackground from '../components/DitheredBackground';
 import api from '../services/api';
+import { exportToPDF } from '../services/pdfService';
 
 function TrendTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
@@ -38,6 +39,7 @@ export default function HistoryPage() {
         api.getBadges()
       ]);
       setTimelineMeals(meals);
+      console.log('Meals:', meals);
       setWeeklyTrend(stats);
       setGlowBadges(badges);
     } catch (error) {
@@ -56,15 +58,18 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background-dark px-6 pb-20 pt-10 text-white sm:px-10 lg:px-16 relative">
+    <div className="min-h-screen bg-background-dark px-6 pb-20 pt-10 text-white sm:px-10 lg:px-16 relative" style={{ minHeight: '100vh' }}>
       <DitheredBackground />
-      <div className="relative z-10">
+      <div id="history-content" className="relative z-10">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-sm uppercase tracking-[0.3em] text-white/60">History & Progress</p>
           <h1 className="mt-2 text-4xl font-semibold">Timeline, streaks, and radiance trends.</h1>
         </div>
-        <button className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm uppercase tracking-wider text-white/80 transition hover:border-accent-soft">
+        <button
+          onClick={() => exportToPDF('history-content', 'Nafira-History-Report')}
+          className="export-button rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm uppercase tracking-wider text-white/80 transition hover:border-accent-soft"
+        >
           Export insights
         </button>
       </header>
@@ -74,11 +79,17 @@ export default function HistoryPage() {
           <p className="text-sm uppercase tracking-[0.3em] text-white/60">Logged meals</p>
           <div className="mt-6 space-y-4">
             {timelineMeals.map((meal) => (
-              <div key={meal.id} className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-white/5 p-4">
-                <div>
-                  <p className="text-lg font-semibold">{meal.title}</p>
-                  <p className="text-xs text-white/60">{meal.date}</p>
-                  <p className="mt-2 text-sm text-white/70">{meal.notes}</p>
+              <div key={meal.id} className="flex flex-wrap items-start justify-between gap-4 rounded-3xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-start gap-4">
+                  <div
+                    className="h-24 w-24 flex-shrink-0 rounded-2xl bg-cover bg-center"
+                    style={{ backgroundImage: `url(${process.env.REACT_APP_API_URL.replace('/api', '')}${meal.image})` }}
+                  />
+                  <div>
+                    <p className="text-lg font-semibold">{meal.title}</p>
+                    <p className="text-xs text-white/60">{meal.date}</p>
+                    <p className="mt-2 text-sm text-white/70">{meal.notes}</p>
+                  </div>
                 </div>
                 <div className="text-right">
                   <p className="text-xs uppercase tracking-[0.3em] text-white/60">Score</p>

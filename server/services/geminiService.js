@@ -12,15 +12,6 @@ const __dirname = dirname(__filename);
 const VISION_MODEL_PORT = process.env.VISION_MODEL_PORT || 5001;
 const VISION_MODEL_URL = `http://localhost:${VISION_MODEL_PORT}`;
 
-let genAI = null;
-if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your-gemini-api-key-here') {
-  try {
-    genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  } catch (error) {
-    console.error('Failed to initialize Gemini:', error.message);
-  }
-}
-
 async function checkVisionModelAvailable() {
   try {
     const response = await axios.get(`${VISION_MODEL_URL}/health`, { timeout: 2000 });
@@ -99,6 +90,16 @@ async function analyzeWithVisionModel(imagePath) {
 }
 
 async function analyzeWithGemini(imagePath) {
+  let genAI = null;
+  if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your-gemini-api-key-here') {
+    try {
+      genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    } catch (error) {
+      console.error('Failed to initialize Gemini:', error.message);
+      return null;
+    }
+  }
+
   if (!genAI) {
     console.warn('[Gemini] genAI is not initialized. Check GEMINI_API_KEY.');
     return null;
@@ -161,12 +162,13 @@ async function analyzeWithGemini(imagePath) {
       console.warn('[Gemini] Could not find JSON object in response, falling back.');
     }
   } catch (geminiError) {
-    console.error('[Gemini] AI Error:', geminiError.message);
+    console.error('[Gemini] AI Error:', geminiError);
     if (geminiError.response) {
       console.error('[Gemini] Status:', geminiError.response.status);
       console.error('[Gemini] Response body:', JSON.stringify(geminiError.response.data));
-    } else if (geminiError.stack) {
-      console.error('[Gemini] Stack:', geminiError.stack);
+    }
+    if (geminiError.stack) {
+        console.error('[Gemini] Stack:', geminiError.stack);
     }
   }
 

@@ -4,66 +4,7 @@ import axios from 'axios';
 const HF_API_URL = 'https://api-inference.huggingface.co/models/';
 
 export async function generateAIFocus(userProfile, recentMeals) {
-  try {
-    const prompt = `Generate a short, motivational health insight (max 2 sentences) for a user with these details:
-Goals: ${userProfile?.goals || 'general health'}
-Recent meals: ${recentMeals?.length || 0} logged
-Activity: ${userProfile?.activity_level || 'moderate'}
-
-Focus on metabolic health, energy, and actionable advice. Be encouraging and specific.`;
-
-    // Try multiple free models
-    const models = [
-      'mistralai/Mistral-7B-Instruct-v0.1',
-      'microsoft/phi-2',
-      'google/flan-t5-base'
-    ];
-
-    for (const model of models) {
-      try {
-        const response = await axios.post(
-          `${HF_API_URL}${model}`,
-          {
-            inputs: prompt,
-            parameters: {
-              max_new_tokens: 100,
-              temperature: 0.7,
-              top_p: 0.9,
-              do_sample: true
-            }
-          },
-          {
-            timeout: 10000,
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-
-        if (response.data && response.data[0]?.generated_text) {
-          let text = response.data[0].generated_text;
-          // Clean up the response
-          text = text.replace(prompt, '').trim();
-          text = text.split('\n')[0]; // Take first line
-          if (text.length > 200) {
-            text = text.substring(0, 200) + '...';
-          }
-          if (text.length > 20) {
-            return text;
-          }
-        }
-      } catch (error) {
-        console.log(`Model ${model} failed, trying next...`);
-        continue;
-      }
-    }
-
-    // Fallback to generated insights
-    return generateSmartFallback(userProfile, recentMeals);
-  } catch (error) {
-    console.error('HuggingFace API Error:', error.message);
-    return generateSmartFallback(userProfile, recentMeals);
-  }
+  return generateSmartFallback(userProfile, recentMeals);
 }
 
 function generateSmartFallback(userProfile, recentMeals) {
