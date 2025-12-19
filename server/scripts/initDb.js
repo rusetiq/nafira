@@ -60,18 +60,6 @@ async function seedDatabase() {
         });
         console.log('✅ Demo badges created');
 
-        // Create some demo meals
-        const meals = [
-            { name: 'Grilled Chicken Salad', image_path: 'test-meal.jpg', score: 85, advice: 'A light and healthy meal.', carbs: 10, protein: 30, fats: 15, calories: 300, hydration: 80, ingredients: '["chicken", "lettuce", "tomato"]', strengths: '["High protein"]', improvements: '["Add more veggies"]' },
-            { name: 'Salmon with Quinoa', image_path: 'test-meal.jpg', score: 90, advice: 'Rich in omega-3s.', carbs: 40, protein: 35, fats: 20, calories: 500, hydration: 75, ingredients: '["salmon", "quinoa"]', strengths: '["High protein", "Omega-3s"]', improvements: '["Add a side of greens"]' },
-            { name: 'Vegetable Stir-fry', image_path: 'test-meal.jpg', score: 80, advice: 'A colorful and nutritious dish.', carbs: 30, protein: 15, fats: 10, calories: 250, hydration: 85, ingredients: '["broccoli", "carrots", "tofu"]', strengths: '["High in vitamins"]', improvements: '["Add a protein source"]' }
-        ];
-
-        meals.forEach(meal => {
-            mealQueries.create.run(userId, meal.name, meal.image_path, meal.score, meal.advice, meal.carbs, meal.protein, meal.fats, meal.calories, meal.hydration, meal.ingredients, meal.strengths, meal.improvements);
-        });
-        console.log('✅ Demo meals created');
-
     } catch (err) {
         console.error('Error during seeding:', err);
         throw err;

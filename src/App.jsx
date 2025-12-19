@@ -8,6 +8,7 @@ import DashboardPage from './pages/DashboardPage';
 import MealAnalysisPage from './pages/MealAnalysisPage';
 import HistoryPage from './pages/HistoryPage';
 import ProfilePage from './pages/ProfilePageEnhanced';
+import DemoPage from './pages/DemoPage';
 import Navigation from './components/Navigation';
 import VisionModelReadyToast from './components/VisionModelReadyToast';
 import api from './services/api';
@@ -106,6 +107,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/demo" element={<DemoPage />} />
       </Routes>
     </div>
   );

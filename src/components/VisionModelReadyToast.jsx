@@ -7,7 +7,7 @@ export default function VisionModelReadyToast() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY) === '1') return;
+    if (localStorage.getItem(STORAGE_KEY) === '100') return;
 
     let cancelled = false;
 

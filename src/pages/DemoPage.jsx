@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Sparkles, CheckCircle, TrendingUp, Droplet, Zap } from 'lucide-react';
+import { Upload, Sparkles, CheckCircle, TrendingUp, Droplet, Zap, ArrowRight, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import FluidGlassModal from '../components/FluidGlassModal';
 import MagicBento from '../components/MagicBento';
 import SpotlightCard from '../components/SpotlightCard';
@@ -8,7 +9,8 @@ import ShinyText from '../components/ShinyText';
 import GradientText from '../components/GradientText';
 import TargetCursor from '../components/TargetCursor';
 import DitheredBackground from '../components/DitheredBackground';
-import { useAppData } from '../context/AppDataContext.jsx';
+
+const DEMO_TOKEN = process.env.REACT_APP_DEMO_TOKEN || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzY0YzNhYjMwNjM2YjAwMTM3ZTU1MjkiLCJpYXQiOjE3MzQ2NjUxMzEsImV4cCI6MTczNzI1NzEzMX0.4wF3eAzKqYmN9bqYKr7zNX0kAJ_EMl8t9OFuOFg6oFo';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -104,16 +106,18 @@ function CircularHealthScore({ score }) {
   );
 }
 
-export default function MealAnalysisPage() {
+export default function DemoPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [displayText, setDisplayText] = useState('');
   const [displayScore, setDisplayScore] = useState(0);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [result, setResult] = useState(null);
   const fileInputRef = useRef(null);
-  const { analysisState, startAnalysis } = useAppData();
-  const analyzing = analysisState.running;
-  const result = analysisState.result;
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (analyzing) {
@@ -121,7 +125,8 @@ export default function MealAnalysisPage() {
       setDisplayScore(0);
       return () => {};
     }
-    if (result?.advice) {
+    if (result?.advice && !hasAnalyzed) {
+      setHasAnalyzed(true);
       setDisplayText('');
       setDisplayScore(0);
       const fullText = result.advice;
@@ -135,30 +140,65 @@ export default function MealAnalysisPage() {
           currentIndex++;
         } else {
           clearInterval(interval);
+          setTimeout(() => {
+            setShowLoginPrompt(true);
+          }, 2000);
         }
       }, 140);
       
       return () => clearInterval(interval);
     }
     return () => {};
-  }, [analyzing, result]);
+  }, [analyzing, result, hasAnalyzed]);
 
   const handleAnalyze = async (files) => {
     const file = files?.[0];
     if (!file) return;
     
+    if (hasAnalyzed) {
+      setShowLoginPrompt(true);
+      return;
+    }
+    
     const imageUrl = URL.createObjectURL(file);
     setUploadedImageUrl(imageUrl);
-    
-    await startAnalysis(file);
     setModalOpen(false);
+    setAnalyzing(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/meals`, {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${DEMO_TOKEN}`
+  },
+  body: formData
+});
+      
+      if (!response.ok) {
+        throw new Error('Analysis failed');
+      }
+      
+      const data = await response.json();
+      setResult(data);
+    } catch (error) {
+      console.error('Demo analysis error:', error);
+      alert('Analysis failed. Please try again.');
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const handleLoginRedirect = () => {
+    navigate('/login');
   };
 
   const liveScore = result?.score ?? displayScore;
   const displayImage = uploadedImageUrl || result?.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1000&q=80";
   const macros = result?.macros;
   const hydration = result?.hydration;
-
   const adviceText = displayText || result?.advice || '';
   const hasAnalysisCompleted = result && !analyzing;
 
@@ -167,62 +207,148 @@ export default function MealAnalysisPage() {
       <DitheredBackground />
       
       <div className="relative z-10 max-w-7xl mx-auto">
-        <FluidGlassModal open={modalOpen} onClose={() => setModalOpen(false)} title="Upload or snap a meal">
-          <motion.div 
-            className="space-y-6 text-white/80"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <p className="text-sm leading-relaxed">Upload a clear photo of your meal. Natural lighting and a top-down angle provide the best analysis results.</p>
-            <motion.label
-              className={`relative flex flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed ${
-                isDragging ? 'border-accent-primary bg-accent-primary/10' : 'border-white/15 bg-white/5'
-              } p-10 text-center transition-all duration-300 cursor-pointer overflow-hidden group`}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setIsDragging(true);
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setIsDragging(false);
-                handleAnalyze(e.dataTransfer.files);
-              }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+        <AnimatePresence>
+          {showLoginPrompt && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              onClick={handleLoginRedirect}
             >
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-accent-primary/10 to-accent-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              />
-              <motion.div
-                animate={isDragging ? { scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] } : {}}
-                transition={{ duration: 0.5, repeat: isDragging ? Infinity : 0 }}
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                className="max-w-md w-full rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.03] backdrop-blur-xl p-8 text-center shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
               >
-                <Upload className="h-10 w-10 text-accent-soft relative z-10" />
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-accent-primary/30 to-accent-secondary/30 mb-6"
+                >
+                  <Lock className="w-10 h-10 text-accent-primary" />
+                </motion.div>
+                <h2 className="text-3xl font-bold mb-4">
+                  <GradientText>Demo Complete!</GradientText>
+                </h2>
+                <p className="text-white/70 mb-6 leading-relaxed">
+                  You've experienced the power of NAFIRA's AI-powered nutrition analysis. Create an account to unlock unlimited meal tracking, personalized insights, and more.
+                </p>
+                <motion.button
+                  onClick={handleLoginRedirect}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full py-3.5 rounded-full bg-gradient-to-r from-accent-primary to-accent-secondary text-white font-semibold uppercase tracking-wide shadow-lg shadow-accent-primary/30 flex items-center justify-center gap-2"
+                >
+                  Sign Up Now
+                  <ArrowRight size={18} />
+                </motion.button>
+                <button
+                  onClick={() => setShowLoginPrompt(false)}
+                  className="mt-4 text-sm text-white/60 hover:text-white transition-colors"
+                >
+                  Close
+                </button>
               </motion.div>
-              <span className="text-base relative z-10">Drag & drop a meal photo or tap to browse</span>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleAnalyze(e.target.files)}
-              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <FluidGlassModal open={modalOpen} onClose={() => setModalOpen(false)} title={hasAnalyzed ? "Demo Limit Reached" : "Upload or snap a meal"}>
+          {hasAnalyzed ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center space-y-6"
+            >
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent-primary/20"
+              >
+                <Lock className="w-8 h-8 text-accent-primary" />
+              </motion.div>
+              <div>
+                <h3 className="text-2xl font-bold mb-3">
+                  <GradientText>Upgrade to Continue</GradientText>
+                </h3>
+                <p className="text-white/70 leading-relaxed">
+                  The demo allows one free analysis. Sign up to unlock unlimited meal tracking and personalized nutrition insights.
+                </p>
+              </div>
               <motion.button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  fileInputRef.current?.click();
-                }}
+                onClick={handleLoginRedirect}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative z-10 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/70 hover:border-accent-primary hover:bg-white/10 transition-all duration-300"
+                className="w-full py-3.5 rounded-full bg-gradient-to-r from-accent-primary to-accent-secondary text-white font-semibold uppercase tracking-wide shadow-lg shadow-accent-primary/30 flex items-center justify-center gap-2"
               >
-                Browse files
+                Create Free Account
+                <ArrowRight size={18} />
               </motion.button>
-            </motion.label>
-          </motion.div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              className="space-y-6 text-white/80"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="rounded-2xl border border-accent-primary/30 bg-accent-primary/10 p-4 text-sm">
+                <p className="text-accent-primary font-semibold mb-1">🎉 Free Demo</p>
+                <p className="text-white/70">Try one meal analysis to experience NAFIRA's AI-powered nutrition insights.</p>
+              </div>
+              <p className="text-sm leading-relaxed">Upload a clear photo of your meal. Natural lighting and a top-down angle provide the best analysis results.</p>
+              <motion.label
+                className={`relative flex flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed ${
+                  isDragging ? 'border-accent-primary bg-accent-primary/10' : 'border-white/15 bg-white/5'
+                } p-10 text-center transition-all duration-300 cursor-pointer overflow-hidden group`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDragging(true);
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDragging(false);
+                  handleAnalyze(e.dataTransfer.files);
+                }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-accent-primary/10 to-accent-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                />
+                <motion.div
+                  animate={isDragging ? { scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] } : {}}
+                  transition={{ duration: 0.5, repeat: isDragging ? Infinity : 0 }}
+                >
+                  <Upload className="h-10 w-10 text-accent-soft relative z-10" />
+                </motion.div>
+                <span className="text-base relative z-10">Drag & drop a meal photo or tap to browse</span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleAnalyze(e.target.files)}
+                />
+                <motion.button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative z-10 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/70 hover:border-accent-primary hover:bg-white/10 transition-all duration-300"
+                >
+                  Browse files
+                </motion.button>
+              </motion.label>
+            </motion.div>
+          )}
         </FluidGlassModal>
 
         <motion.div 
@@ -238,7 +364,7 @@ export default function MealAnalysisPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
-              Meal Analysis
+              Demo - Meal Analysis
             </motion.p>
             <motion.h1 
               className="mt-2 text-4xl font-semibold"
@@ -248,9 +374,19 @@ export default function MealAnalysisPage() {
             >
               AI-Powered Nutrition Insights
             </motion.h1>
+            {!hasAnalyzed && (
+              <motion.p
+                className="mt-2 text-sm text-accent-primary"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                Try one free analysis
+              </motion.p>
+            )}
           </div>
           <motion.button
-            onClick={() => setModalOpen(true)}
+            onClick={() => hasAnalyzed ? setShowLoginPrompt(true) : setModalOpen(true)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="group relative flex items-center gap-3 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-all duration-300 hover:border-accent-soft hover:bg-white/10 overflow-hidden"
@@ -265,9 +401,9 @@ export default function MealAnalysisPage() {
               animate={analyzing ? { rotate: 360 } : {}}
               transition={{ duration: 2, repeat: analyzing ? Infinity : 0, ease: 'linear' }}
             >
-              <Upload size={18} className="relative z-10" />
+              {hasAnalyzed ? <Lock size={18} className="relative z-10" /> : <Upload size={18} className="relative z-10" />}
             </motion.div>
-            <span className="relative z-10">{analyzing ? 'Analyzing...' : 'Upload meal'}</span>
+            <span className="relative z-10">{analyzing ? 'Analyzing...' : hasAnalyzed ? 'Upgrade to Continue' : 'Upload meal'}</span>
           </motion.button>
         </motion.div>
 
@@ -503,7 +639,7 @@ export default function MealAnalysisPage() {
                             key={idx}
                             className="flex items-start gap-2 text-sm text-accent-soft"
                             initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
+animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.1 * idx }}
                             whileHover={{ x: 5 }}
                           >
