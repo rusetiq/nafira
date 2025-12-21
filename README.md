@@ -2,9 +2,9 @@
 
 A production-ready meal analysis and health tracking application with AI-powered insights, built with React and Node.js.
 
-> **🚀 Want to get started quickly?** See [QUICKSTART.md](QUICKSTART.md) for Windows users or [SETUP.md](SETUP.md) for step-by-step instructions.
+> **Want to get started quickly?** See [QUICKSTART.md](QUICKSTART.md) for Windows users or [SETUP.md](SETUP.md) for step-by-step instructions.
 
-## 🌟 Features
+## Features
 
 - **Meal Analysis**: Upload meal photos for AI-powered nutritional analysis
 - **Health Dashboard**: Track calories, macros, and health scores
@@ -13,7 +13,7 @@ A production-ready meal analysis and health tracking application with AI-powered
 - **Gamification**: Earn badges and track streaks
 - **Secure Authentication**: JWT-based user authentication
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - React 18
@@ -30,12 +30,12 @@ A production-ready meal analysis and health tracking application with AI-powered
 - Bcrypt for password hashing
 - Multer for file uploads
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Node.js (v16 or higher)
 - npm or yarn
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone and Install Dependencies
 
@@ -68,8 +68,8 @@ UPLOAD_PATH=./uploads
 
 ### 3. Initialize the Database
 
-```bash
-npm run server:init
+```powershell
+./install.bat
 ```
 
 This will:
@@ -80,12 +80,13 @@ This will:
 **Demo Credentials:**
 - Email: `demo@nafira.app`
 - Password: `demo123`
+- Display Namw: `Aarush Diwakar`
 
 ### 4. Run the Application
 
 **Option A: Run Both Frontend and Backend Together**
-```bash
-npm run dev
+```powershell
+./start.bat
 ```
 
 **Option B: Run Separately**
@@ -104,7 +105,7 @@ The application will be available at:
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:5000/api
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 nafira-app/
@@ -125,7 +126,7 @@ nafira-app/
 └── README.md
 ```
 
-## 🔐 API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - Register new user
@@ -144,7 +145,7 @@ nafira-app/
 - `GET /api/meals/history` - Get meal history
 - `GET /api/meals/weekly-stats` - Get weekly statistics
 
-## 🎨 Key Features Explained
+## Key Features Explained
 
 ### Meal Analysis
 Upload a meal photo and the system will:
@@ -171,7 +172,7 @@ Upload a meal photo and the system will:
 - Configure notification preferences
 - View health profile summary
 
-## 🔧 Development
+## Development
 
 ### Frontend Development
 ```bash
@@ -198,7 +199,7 @@ You can use any SQLite browser like:
 - DB Browser for SQLite
 - SQLite Viewer (VS Code extension)
 
-## 📦 Production Build
+## Production Build
 
 ### Build Frontend
 ```bash
@@ -217,7 +218,6 @@ This creates an optimized production build in the `build/` folder.
 1. Set environment variables:
 ```bash
 cd server
-# Edit .env file
 NODE_ENV=production
 FRONTEND_URL=https://your-domain.com
 ```
@@ -230,7 +230,7 @@ npm start
 
 The server will serve both the API and the built React app.
 
-## 🚢 Deployment
+## Deployment
 
 ### Option 1: Traditional Hosting (VPS/Cloud)
 
@@ -285,7 +285,7 @@ docker run -p 5000:5000 -e NODE_ENV=production nafira-app
 - Deploy the `server/` folder
 - Set all required environment variables
 
-## 🔒 Security Considerations
+## Security Considerations
 
 1. **Change JWT Secret**: Update `JWT_SECRET` in production
 2. **Use HTTPS**: Always use HTTPS in production
@@ -293,11 +293,10 @@ docker run -p 5000:5000 -e NODE_ENV=production nafira-app
 4. **File Upload Limits**: 10MB max file size
 5. **CORS**: Configure `FRONTEND_URL` for production
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Database Issues
 ```bash
-# Reset database
 cd server
 rm database/nafira.db
 npm run init-db
@@ -305,7 +304,6 @@ npm run init-db
 
 ### Port Already in Use
 ```bash
-# Change port in server/.env
 PORT=5001
 ```
 
@@ -318,14 +316,14 @@ PORT=5001
 - Check JWT_SECRET is set
 - Verify token expiration (7 days default)
 
-## 📝 License
+## License
 
 This project is private and proprietary.
 
-## 👥 Support
+## Support
 
-For issues and questions, please contact the development team.
+For issues and questions, please DM me!
 
 ---
 
-**Built with ❤️ using React and Node.js**
+**Built with ❤️ using React and Node.js by [rusetiq](https://github.com/rusetiq)**
