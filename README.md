@@ -1,4 +1,4 @@
-# Nafira - Metabolic Radiance Dashboard
+# Nafira - Metabolic Insights Dashboard
 
 A production-ready meal analysis and health tracking application with AI-powered insights, built with React and Node.js.
 
