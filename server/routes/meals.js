@@ -4,6 +4,8 @@ import { mealQueries, healthStatsQueries, settingsQueries } from '../config/data
 import { authenticateToken } from '../middleware/auth.js';
 import { upload } from '../middleware/upload.js';
 import { analyzeMealWithAI } from '../services/geminiService.js';
+import { analyzeMealSustainability } from '../services/sustainabilityService.js';
+import { sustainabilityQueries } from '../config/database.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -13,7 +15,7 @@ const __dirname = dirname(__filename);
 
 const router = express.Router();
 
-// Create meal analysis
+// Create new meal
 router.post(
   '/',
   authenticateToken,
@@ -37,12 +39,8 @@ router.post(
       const uploadDir = process.env.UPLOAD_PATH || path.join(__dirname, '../uploads');
       const fullImagePath = path.join(uploadDir, imagePath);
 
-      // Get user's processing preference
-      const settings = settingsQueries.findByUserId.get(userId);
-      const processingPreference = settings?.processing_preference || 'auto';
-
-      // Use AI for analysis based on user preference
-      const analysis = await analyzeMealWithAI(fullImagePath, processingPreference);
+      // Use AI for analysis
+      const analysis = await analyzeMealWithAI(fullImagePath, 'auto');
 
       const mealName =
         req.body.name ||
@@ -60,13 +58,25 @@ router.post(
         analysis.protein,
         analysis.fats,
         analysis.calories,
-        analysis.hydration,
-        analysis.ingredients,
-        analysis.strengths,
-        analysis.improvements
+        analysis.hydration
       );
 
       const mealId = result.lastInsertRowid;
+
+      // Calculate and save sustainability metrics
+      if (analysis.ingredients && analysis.ingredients.length > 0) {
+        const sustainabilityAnalysis = analyzeMealSustainability(analysis.ingredients);
+
+        sustainabilityQueries.create.run(
+          mealId,
+          sustainabilityAnalysis.carbonFootprint,
+          sustainabilityAnalysis.waterFootprint,
+          sustainabilityAnalysis.isPlantBased,
+          false, // isLocal - not detected yet
+          false, // isSeasonal - not detected yet
+          sustainabilityAnalysis.sustainabilityScore
+        );
+      }
 
       // Update daily stats
       const todayStats = mealQueries.getTodaysMeals.all(userId);
@@ -99,7 +109,7 @@ router.post(
         ingredients: analysis.ingredients || [],
         strengths: analysis.strengths || [],
         improvements: analysis.improvements || [],
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        time: new Date().toISOString(),
       });
     } catch (error) {
       console.error('Meal creation error:', error);
@@ -120,10 +130,7 @@ router.get('/recent', authenticateToken, (req, res) => {
       image: `/api/uploads/${meal.image_path}`,
       score: meal.score,
       advice: meal.advice,
-      time: new Date(meal.created_at).toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
+      time: meal.created_at,
       macros: {
         carbs: meal.carbs,
         protein: meal.protein,
@@ -150,13 +157,7 @@ router.get('/history', authenticateToken, (req, res) => {
     const formattedMeals = meals.map((meal) => ({
       id: meal.id,
       title: meal.name,
-      date: new Date(meal.created_at).toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
+      date: meal.created_at,
       score: meal.score,
       notes: meal.advice,
       image: `/api/uploads/${meal.image_path}`,

@@ -8,7 +8,9 @@ echo =========================================
 echo   Starting Nafira App
 echo =========================================
 echo.
-echo Frontend:  http://localhost:3000
+echo IMPORTANT: Frontend requires Administrator privileges for port 80
+echo.
+echo Frontend:  http://localhost:80
 echo Backend:   http://localhost:5000
 echo Vision AI: http://localhost:5001
 echo.

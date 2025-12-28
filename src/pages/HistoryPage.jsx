@@ -8,13 +8,14 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import DitheredBackground from '../components/DitheredBackground';
 import api from '../services/api';
 import { exportToPDF } from '../services/pdfService';
+import { formatLocalDateTime } from '../utils/timeUtils';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
-  show: { 
-    opacity: 1, 
+  show: {
+    opacity: 1,
     y: 0,
-    transition: { 
+    transition: {
       duration: 0.6,
       ease: [0.4, 0, 0.2, 1]
     }
@@ -35,7 +36,7 @@ const staggerContainer = {
 function TrendTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       className="rounded-2xl border border-white/10 bg-black/90 backdrop-blur-xl px-4 py-3 text-sm shadow-xl"
@@ -91,7 +92,7 @@ export default function HistoryPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background-dark flex items-center justify-center">
-        <motion.div 
+        <motion.div
           className="text-center"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -110,35 +111,35 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background-dark px-4 sm:px-6 lg:px-10 pb-20 pt-10 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-background-dark px-3 sm:px-6 lg:px-10 pb-16 sm:pb-20 pt-6 sm:pt-10 text-white relative overflow-hidden">
       <DitheredBackground />
-      
+
       <div id="history-content" className="relative z-10 max-w-7xl mx-auto">
-        <motion.header 
-          className="flex flex-wrap items-center justify-between gap-6 mb-10"
+        <motion.header
+          className="flex flex-wrap items-center justify-between gap-3 sm:gap-6 mb-6 sm:mb-10"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           <div>
-            <motion.p 
-              className="text-sm uppercase tracking-[0.3em] text-white/60"
+            <motion.p
+              className="text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/60"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
               History & Progress
             </motion.p>
-            <motion.h1 
-              className="mt-2 text-4xl font-semibold"
+            <motion.h1
+              className="mt-1 sm:mt-2 text-2xl sm:text-3xl lg:text-4xl font-semibold"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
               <GradientText>Your Nutrition Journey</GradientText>
             </motion.h1>
-            <motion.p 
-              className="mt-2 text-white/60"
+            <motion.p
+              className="mt-1 sm:mt-2 text-sm sm:text-base text-white/60"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -151,7 +152,7 @@ export default function HistoryPage() {
             disabled={isExporting}
             whileHover={{ scale: isExporting ? 1 : 1.05 }}
             whileTap={{ scale: isExporting ? 1 : 0.95 }}
-            className="group relative flex items-center gap-3 rounded-xl border border-white/15 bg-white/5 backdrop-blur-sm px-6 py-3 text-sm font-medium uppercase tracking-wider text-white/80 transition-all duration-300 hover:border-accent-soft hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+            className="group relative flex items-center gap-2 sm:gap-3 rounded-xl border border-white/15 bg-white/5 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium uppercase tracking-wider text-white/80 transition-all duration-300 hover:border-accent-soft hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
@@ -160,18 +161,17 @@ export default function HistoryPage() {
               className="absolute inset-0 bg-gradient-to-r from-accent-primary/10 to-accent-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             />
             <motion.div
-              animate={isExporting ? { rotate: 360 } : {}}
-              transition={{ duration: 2, repeat: isExporting ? Infinity : 0, ease: 'linear' }}
+              style={isExporting ? { animation: 'spin 2s linear infinite' } : {}}
               className="relative z-10"
             >
-              <Download size={18} />
+              <Download size={16} className="sm:w-[18px] sm:h-[18px]" />
             </motion.div>
             <span className="relative z-10">{isExporting ? 'Exporting...' : 'Export Report'}</span>
           </motion.button>
         </motion.header>
 
-        <motion.section 
-          className="grid gap-8 lg:grid-cols-[1fr_1fr]"
+        <motion.section
+          className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_1fr]"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
@@ -195,7 +195,7 @@ export default function HistoryPage() {
                     <TrendingUp className="text-accent-primary" size={24} />
                   </motion.div>
                 </div>
-                <motion.div 
+                <motion.div
                   className="h-64"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -210,16 +210,16 @@ export default function HistoryPage() {
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                      <XAxis 
-                        dataKey="day" 
-                        stroke="#ffffff40" 
-                        tickLine={false} 
+                      <XAxis
+                        dataKey="day"
+                        stroke="#ffffff40"
+                        tickLine={false}
                         axisLine={false}
                         style={{ fontSize: '12px' }}
                       />
-                      <YAxis 
-                        stroke="#ffffff40" 
-                        tickLine={false} 
+                      <YAxis
+                        stroke="#ffffff40"
+                        tickLine={false}
                         axisLine={false}
                         style={{ fontSize: '12px' }}
                       />
@@ -250,7 +250,7 @@ export default function HistoryPage() {
                     <Calendar className="text-accent-soft" size={24} />
                   </motion.div>
                 </div>
-                <motion.div 
+                <motion.div
                   className="h-56"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -265,27 +265,27 @@ export default function HistoryPage() {
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                      <XAxis 
-                        dataKey="day" 
-                        stroke="#ffffff40" 
-                        tickLine={false} 
+                      <XAxis
+                        dataKey="day"
+                        stroke="#ffffff40"
+                        tickLine={false}
                         axisLine={false}
                         style={{ fontSize: '12px' }}
                       />
-                      <YAxis 
-                        stroke="#ffffff40" 
-                        tickLine={false} 
+                      <YAxis
+                        stroke="#ffffff40"
+                        tickLine={false}
                         axisLine={false}
                         style={{ fontSize: '12px' }}
                       />
                       <Tooltip content={<TrendTooltip />} />
-                      <Area 
-                        type="monotone" 
-                        dataKey="calories" 
-                        stroke="#FFC299" 
+                      <Area
+                        type="monotone"
+                        dataKey="calories"
+                        stroke="#FFC299"
                         strokeWidth={2}
-                        fillOpacity={1} 
-                        fill="url(#calGradient)" 
+                        fillOpacity={1}
+                        fill="url(#calGradient)"
                       />
                     </AreaChart>
                   </ResponsiveContainer>
@@ -306,40 +306,40 @@ export default function HistoryPage() {
                   <h2 className="text-2xl font-semibold mt-1">Recent Meals</h2>
                 </div>
               </div>
-              <motion.div 
+              <motion.div
                 className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"
                 variants={staggerContainer}
                 initial="hidden"
                 animate="show"
               >
                 {timelineMeals.map((meal, idx) => (
-                  <motion.div 
+                  <motion.div
                     key={meal.id}
                     variants={fadeInUp}
                     whileHover={{ x: 5, scale: 1.02 }}
-                    className="group flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 transition-all duration-300 hover:bg-white/10 hover:border-accent-primary/30 cursor-pointer relative overflow-hidden"
+                    className="group flex items-start gap-3 sm:gap-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-3 sm:p-4 transition-all duration-300 hover:bg-white/10 hover:border-accent-primary/30 cursor-pointer relative overflow-hidden"
                   >
                     <motion.div
                       className="absolute inset-0 bg-gradient-to-r from-accent-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     />
                     <motion.div
-                      className="h-20 w-20 flex-shrink-0 rounded-xl bg-cover bg-center border border-white/10 relative z-10"
+                      className="h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0 rounded-xl bg-cover bg-center border border-white/10 relative z-10"
                       style={{ backgroundImage: `url(${process.env.REACT_APP_API_URL.replace('/api', '')}${meal.image})` }}
                       whileHover={{ scale: 1.1, rotate: 2 }}
                       transition={{ type: 'spring', stiffness: 300 }}
                     />
                     <div className="flex-1 min-w-0 relative z-10">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
-                          <p className="text-base font-semibold truncate group-hover:text-accent-primary transition-colors duration-300">{meal.title}</p>
-                          <p className="text-xs text-white/60 mt-1">{meal.date}</p>
+                      <div className="flex items-start justify-between gap-2 sm:gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm sm:text-base font-semibold truncate group-hover:text-accent-primary transition-colors duration-300">{meal.title}</p>
+                          <p className="text-xs text-white/60 mt-1">{formatLocalDateTime(meal.date)}</p>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <p className="text-xs uppercase tracking-[0.2em] text-white/60">Score</p>
-                          <GradientText className="text-2xl font-bold">{meal.score}</GradientText>
+                          <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/60">Score</p>
+                          <GradientText className="text-xl sm:text-2xl font-bold">{meal.score}</GradientText>
                         </div>
                       </div>
-                      <p className="mt-2 text-sm text-white/70 line-clamp-2">{meal.notes}</p>
+                      <p className="mt-2 text-xs sm:text-sm text-white/70 line-clamp-2">{meal.notes}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -350,14 +350,14 @@ export default function HistoryPage() {
 
         <AnimatePresence>
           {glowBadges.length > 0 && (
-            <motion.section 
+            <motion.section
               className="mt-10"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <motion.div 
+              <motion.div
                 className="mb-6"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -368,7 +368,7 @@ export default function HistoryPage() {
                   <GradientText>Your Milestones</GradientText>
                 </h2>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="grid gap-6 md:grid-cols-3"
                 variants={staggerContainer}
                 initial="hidden"
@@ -379,15 +379,15 @@ export default function HistoryPage() {
                     key={badge.id}
                     variants={fadeInUp}
                   >
-                    <SpotlightCard 
+                    <SpotlightCard
                       delay={0}
                       className="relative overflow-hidden bg-white/5 text-center p-6 group hover:bg-white/10 transition-all duration-300 cursor-pointer"
                     >
-                      <motion.div 
+                      <motion.div
                         className="absolute inset-0 bg-gradient-to-br from-accent-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       />
                       <div className="relative z-10">
-                        <motion.div 
+                        <motion.div
                           className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-primary/20 to-accent-soft/20 border border-accent-primary/30 mb-4"
                           whileHover={{ scale: 1.15, rotate: 5 }}
                           transition={{ type: 'spring', stiffness: 300 }}

@@ -1,4 +1,9 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const getApiBaseUrl = () => {
+  const hostname = window.location.hostname;
+  return `http://${hostname}:5000/api`;
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 
 class ApiService {
@@ -153,6 +158,45 @@ class ApiService {
 
   async getWeeklyStats() {
     const response = await fetch(`${API_BASE_URL}/meals/weekly-stats`, {
+      headers: this.getAuthHeaders(),
+      credentials: 'include',
+    });
+    return this.handleResponse(response);
+  }
+
+  // Generic HTTP methods for new features
+  async get(endpoint) {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(),
+      credentials: 'include',
+    });
+    return this.handleResponse(response);
+  }
+
+  async post(endpoint, data) {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+      credentials: 'include',
+      body: JSON.stringify(data),
+    });
+    return this.handleResponse(response);
+  }
+
+  async put(endpoint, data) {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(),
+      credentials: 'include',
+      body: JSON.stringify(data),
+    });
+    return this.handleResponse(response);
+  }
+
+  async delete(endpoint) {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'DELETE',
       headers: this.getAuthHeaders(),
       credentials: 'include',
     });

@@ -15,10 +15,10 @@ body {
   color: #f8fafc;
   min-height: 100vh;
   background-image:
-      linear-gradient(135deg, rgba(245, 71, 3, 0.08) 25%, transparent 25%, transparent 50%, rgba(245, 71, 3, 0.08) 50%, rgba(245, 71, 3, 0.08) 75%, transparent 75%, transparent),
-      linear-gradient(135deg, rgba(253, 139, 93, 0.09) 25%, transparent 25%, transparent 50%, rgba(253, 139, 93, 0.09) 50%, rgba(253, 139, 93, 0.09) 75%, transparent 75%, transparent),
-      radial-gradient(circle at 0% 0%, rgba(255, 194, 153, 0.15), transparent 55%),
-      linear-gradient(140deg, #1b1b1b, #2f2f2f 60%, #1b1b1b);
+    linear-gradient(135deg, rgba(245, 71, 3, 0.08) 25%, transparent 25%, transparent 50%, rgba(245, 71, 3, 0.08) 50%, rgba(245, 71, 3, 0.08) 75%, transparent 75%, transparent),
+    linear-gradient(135deg, rgba(253, 139, 93, 0.09) 25%, transparent 25%, transparent 50%, rgba(253, 139, 93, 0.09) 50%, rgba(253, 139, 93, 0.09) 75%, transparent 75%, transparent),
+    radial-gradient(circle at 0% 0%, rgba(255, 194, 153, 0.15), transparent 55%),
+    linear-gradient(140deg, #1b1b1b, #2f2f2f 60%, #1b1b1b);
   background-size: 4px 4px, 4px 4px, 100% 100%, 100% 100%;
 }
 
@@ -32,6 +32,8 @@ body {
     @apply relative inline-flex items-center overflow-hidden font-display;
     background: linear-gradient(120deg, #fff, #FD8B5D, #f54703, #fff);
     -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: transparent;
     animation: shine 6s linear infinite;
   }
@@ -40,6 +42,8 @@ body {
     @apply font-semibold;
     background: linear-gradient(110deg, #FFC299, #FD8B5D, #f54703);
     -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: transparent;
   }
 
@@ -92,15 +96,19 @@ body {
     transform: translate(0, 0) scale(1);
     opacity: 0.7;
   }
+
   25% {
     transform: translate(40px, -10px) scale(1.15);
   }
+
   50% {
     transform: translate(-10px, 35px) scale(0.85);
   }
+
   75% {
     transform: translate(35px, 20px) scale(1.05);
   }
+
   100% {
     transform: translate(0, 0) scale(1);
     opacity: 0.7;
@@ -111,18 +119,31 @@ body {
   0% {
     background-position: 0% 50%;
   }
+
   100% {
     background-position: 200% 50%;
   }
 }
 
 @keyframes glowPulse {
+
   0%,
   100% {
     box-shadow: 0 0 15px rgba(245, 71, 3, 0.25);
   }
+
   50% {
     box-shadow: 0 0 35px rgba(255, 194, 153, 0.55);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const VISION_HEALTH_URL = 'http://localhost:5001/health';
+const getVisionHealthUrl = () => `http://${window.location.hostname}:5001/health`;
 const STORAGE_KEY = 'vision_model_ready_toast_shown';
 
 export default function VisionModelReadyToast() {
@@ -15,7 +15,7 @@ export default function VisionModelReadyToast() {
       if (cancelled) return;
 
       try {
-        const res = await fetch(VISION_HEALTH_URL);
+        const res = await fetch(getVisionHealthUrl());
         if (!res.ok) {
           throw new Error('Health check failed');
         }

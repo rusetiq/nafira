@@ -9,7 +9,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const VISION_MODEL_PORT = process.env.VISION_MODEL_PORT || 5001;
-const VISION_MODEL_URL = `http://localhost:${VISION_MODEL_PORT}`;
+const VISION_MODEL_HOST = process.env.VISION_MODEL_HOST || 'localhost';
+const VISION_MODEL_URL = `http://${VISION_MODEL_HOST}:${VISION_MODEL_PORT}`;
 
 const OPENROUTER_MODELS = [
   'google/gemini-2.0-flash-exp:free',

@@ -24,19 +24,19 @@ export default function DitheredBackground() {
       for (let y = 0; y < canvas.height; y++) {
         for (let x = 0; x < canvas.width; x++) {
           const i = (y * canvas.width + x) * 4;
-          
+
           // Create gradient from top to bottom
           const gradientValue = (y / canvas.height) * 255;
-          
+
           // Add dither pattern
           const ditherThreshold = ((x % 4) + (y % 4) * 4) / 16;
           const dithered = gradientValue + (Math.random() - ditherThreshold) * 40;
-          
+
           // Orange to dark gradient
           const r = Math.max(0, Math.min(255, 253 - dithered * 0.8));
           const g = Math.max(0, Math.min(255, 71 - dithered * 0.3));
           const b = Math.max(0, Math.min(255, 3 - dithered * 0.01));
-          
+
           data[i] = r;
           data[i + 1] = g;
           data[i + 2] = b;

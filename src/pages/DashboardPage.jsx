@@ -12,10 +12,10 @@ import api from '../services/api';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
-  show: { 
-    opacity: 1, 
+  show: {
+    opacity: 1,
     y: 0,
-    transition: { 
+    transition: {
       duration: 0.6,
       ease: [0.4, 0, 0.2, 1]
     }
@@ -41,6 +41,7 @@ export default function DashboardPage() {
   const [greeting, setGreeting] = useState('');
   const [selectedMeal, setSelectedMeal] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const fileInputRef = useRef(null);
   const { quickStats, recentMeals, startAnalysis } = useAppData();
   const { user } = useAuth();
@@ -57,6 +58,8 @@ export default function DashboardPage() {
         const timeGreet = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
         setGreeting(`${timeGreet}, ${user?.name || 'there'}`);
         setAiInsight('Your metabolic journey is unique. Every meal is data, every choice compounds toward your goals.');
+      } finally {
+        setTimeout(() => setIsLoading(false), 500);
       }
     };
     fetchAIFocus();
@@ -78,13 +81,24 @@ export default function DashboardPage() {
     return words.slice(0, wordLimit).join(' ') + '...';
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background-dark flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-accent-primary/30 border-t-accent-primary rounded-full" style={{ animation: 'spin 1s linear infinite' }} />
+          <p className="text-white/60 text-sm">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background-dark px-4 sm:px-6 lg:px-10 pb-20 pt-10 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-background-dark px-3 sm:px-6 lg:px-10 pb-16 sm:pb-20 pt-6 sm:pt-10 text-white relative overflow-hidden">
       <DitheredBackground />
-      
+
       <div className="relative z-10 max-w-7xl mx-auto">
         <FluidGlassModal open={modalOpen} onClose={() => setModalOpen(false)} title="Analyze a new meal">
-          <motion.div 
+          <motion.div
             className="flex flex-col gap-6 text-white/80"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -92,9 +106,8 @@ export default function DashboardPage() {
           >
             <p className="text-sm leading-relaxed">Upload a photo or drag + drop. Gemini AI will analyze ingredients, macros, and provide personalized nutrition insights.</p>
             <motion.label
-              className={`relative flex flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed ${
-                isDragging ? 'border-accent-primary bg-accent-primary/10' : 'border-white/20 bg-white/5'
-              } p-10 text-center transition-all duration-300 cursor-pointer overflow-hidden group`}
+              className={`relative flex flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed ${isDragging ? 'border-accent-primary bg-accent-primary/10' : 'border-white/20 bg-white/5'
+                } p-10 text-center transition-all duration-300 cursor-pointer overflow-hidden group`}
               onDragOver={(e) => {
                 e.preventDefault();
                 setIsDragging(true);
@@ -156,7 +169,7 @@ export default function DashboardPage() {
 
         <FluidGlassModal open={!!selectedMeal} onClose={() => setSelectedMeal(null)} title="Meal Details">
           {selectedMeal && (
-            <motion.div 
+            <motion.div
               className="space-y-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -164,7 +177,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <motion.h3 
+                  <motion.h3
                     className="text-2xl font-semibold"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -172,7 +185,7 @@ export default function DashboardPage() {
                   >
                     {selectedMeal.name}
                   </motion.h3>
-                  <motion.p 
+                  <motion.p
                     className="text-sm text-white/60 mt-1"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -181,7 +194,7 @@ export default function DashboardPage() {
                     {selectedMeal.time}
                   </motion.p>
                 </div>
-                <motion.div 
+                <motion.div
                   className="text-right"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -191,7 +204,7 @@ export default function DashboardPage() {
                   <GradientText className="text-3xl font-bold">{selectedMeal.score}</GradientText>
                 </motion.div>
               </div>
-              <motion.div 
+              <motion.div
                 className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -204,33 +217,33 @@ export default function DashboardPage() {
           )}
         </FluidGlassModal>
 
-        <motion.header 
-          className="flex flex-wrap items-center justify-between gap-6 mb-10"
+        <motion.header
+          className="flex flex-wrap items-center justify-between gap-3 sm:gap-6 mb-6 sm:mb-10"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           <div>
-            <motion.p 
-              className="text-sm uppercase tracking-[0.3em] text-white/60"
+            <motion.p
+              className="text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/60"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
               Dashboard
             </motion.p>
-            <motion.h1 
-              className="mt-2 text-4xl font-semibold"
+            <motion.h1
+              className="mt-1 sm:mt-2 text-2xl sm:text-3xl lg:text-4xl font-semibold"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.3, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
             >
               <GradientText>{greeting || `Hello, ${user?.name || 'there'}`}</GradientText>
             </motion.h1>
           </div>
           <AnimatePresence>
             {lastRun && (
-              <motion.div 
+              <motion.div
                 className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm px-4 py-2 text-xs text-white/70"
                 initial={{ opacity: 0, scale: 0.8, x: 20 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -244,18 +257,18 @@ export default function DashboardPage() {
           </AnimatePresence>
         </motion.header>
 
-        <motion.section 
-          className="grid gap-6 md:grid-cols-3"
+        <motion.section
+          className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-3"
           variants={staggerContainer}
           initial="hidden"
           animate="show"
         >
           {quickStats.map((stat, idx) => (
             <motion.div key={stat.label} variants={fadeInUp}>
-              <SpotlightCard delay={idx * 0.1} className="space-y-3">
-                <p className="text-sm uppercase tracking-[0.3em] text-white/60">{stat.label}</p>
-                <div className="flex items-end gap-3">
-                  <GradientText className="text-3xl leading-none" style={{ color: stat.accent }}>
+              <SpotlightCard delay={idx * 0.1} className="space-y-2 sm:space-y-3">
+                <p className="text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/60">{stat.label}</p>
+                <div className="flex items-end gap-2 sm:gap-3">
+                  <GradientText className="text-2xl sm:text-3xl leading-none" style={{ color: stat.accent }}>
                     {stat.value}
                   </GradientText>
                   <span className="text-xs text-white/60">{stat.delta}</span>
@@ -265,8 +278,8 @@ export default function DashboardPage() {
           ))}
         </motion.section>
 
-        <motion.section 
-          className="mt-12 grid gap-8 lg:grid-cols-[1.2fr_1fr]"
+        <motion.section
+          className="mt-8 sm:mt-12 grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_1fr]"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
@@ -279,14 +292,14 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <motion.div 
+            <motion.div
               className="mt-6 grid gap-4 md:grid-cols-2"
               variants={staggerContainer}
               initial="hidden"
               animate="show"
             >
               {recentMeals.slice(0, 4).map((meal, idx) => (
-                <motion.div 
+                <motion.div
                   key={meal.id}
                   variants={fadeInUp}
                   whileHover={{ y: -5, scale: 1.02 }}
@@ -317,8 +330,8 @@ export default function DashboardPage() {
 
           <div className="space-y-6">
             <MagicBento className="relative overflow-hidden">
-              <motion.div 
-                className="absolute inset-0 opacity-40" 
+              <motion.div
+                className="absolute inset-0 opacity-40"
                 aria-hidden
                 animate={{
                   scale: [1, 1.2, 1],
@@ -333,7 +346,7 @@ export default function DashboardPage() {
                 <h3 className="text-2xl font-semibold">
                   <GradientText>Your Personalized Insight</GradientText>
                 </h3>
-                <motion.div 
+                <motion.div
                   className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5"
                   whileHover={{ scale: 1.02 }}
                   transition={{ type: 'spring', stiffness: 300 }}
@@ -359,8 +372,8 @@ export default function DashboardPage() {
             </MagicBento>
 
             <MagicBento className="relative overflow-hidden">
-              <motion.div 
-                className="absolute inset-0 opacity-30" 
+              <motion.div
+                className="absolute inset-0 opacity-30"
                 aria-hidden
                 animate={{
                   scale: [1.2, 1, 1.2],
@@ -371,12 +384,12 @@ export default function DashboardPage() {
                 <div className="absolute inset-y-0 right-0 w-2/3 bg-gradient-to-bl from-blue-500/30 to-transparent blur-[100px]" />
               </motion.div>
               <div className="relative space-y-4">
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-3"
                   whileHover={{ x: 5 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 >
-                  <motion.div 
+                  <motion.div
                     className="p-2 rounded-xl bg-blue-500/20 border border-blue-500/30"
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     transition={{ type: 'spring', stiffness: 300 }}
@@ -388,12 +401,12 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold">Good Health & Well-Being</h3>
                   </div>
                 </motion.div>
-                
+
                 <p className="text-sm text-white/70 leading-relaxed">
                   NAFIRA aligns with Sustainable Development Goal 3 by empowering individuals with AI-driven nutrition insights for healthier lifestyles.
                 </p>
 
-                <motion.div 
+                <motion.div
                   className="grid grid-cols-2 gap-3 mt-4"
                   variants={staggerContainer}
                   initial="hidden"

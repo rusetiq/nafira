@@ -10,17 +10,19 @@ const cardVariants = {
   }),
 };
 
-export default function MagicBento({ children, className, delay = 0 }) {
+export default function MagicBento({ children, className, delay = 0, animateOnScroll = false }) {
   return (
     <motion.div
       className={clsx('magic-bento', className)}
       custom={delay}
       initial="initial"
-      whileInView="animate"
-      viewport={{ once: true, amount: 0.3 }}
+      animate={animateOnScroll ? undefined : "animate"}
+      whileInView={animateOnScroll ? "animate" : undefined}
+      viewport={animateOnScroll ? { once: true, amount: 0.3 } : undefined}
       variants={cardVariants}
     >
       {children}
     </motion.div>
   );
 }
+

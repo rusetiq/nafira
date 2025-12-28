@@ -287,8 +287,8 @@ def main():
     if not load_model():
         print("Failed to load model. Server will start but analysis will fail.", file=sys.stderr)
     
-    server = HTTPServer(('localhost', PORT), VisionModelHandler)
-    print(f"Vision Model Server running on http://localhost:{PORT}", file=sys.stderr)
+    server = HTTPServer(('0.0.0.0', PORT), VisionModelHandler)
+    print(f"Vision Model Server running on http://0.0.0.0:{PORT}", file=sys.stderr)
     print("Ready to process requests...", file=sys.stderr)
     
     try:

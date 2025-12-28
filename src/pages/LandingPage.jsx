@@ -12,9 +12,9 @@ const fadeInUp = {
   show: (delay = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { 
-      duration: 0.8, 
-      delay, 
+    transition: {
+      duration: 0.8,
+      delay,
       ease: [0.4, 0, 0.2, 1]
     },
   }),
@@ -76,7 +76,7 @@ export default function LandingPage() {
           initial="hidden"
           animate="show"
         >
-          <motion.span 
+          <motion.span
             className="text-white/80 block"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -125,7 +125,7 @@ export default function LandingPage() {
               <ArrowRight size={16} />
             </span>
           </motion.button>
-          
+
           <motion.button
             onClick={() => navigate('/demo')}
             whileHover={{ scale: 1.05 }}
@@ -148,7 +148,7 @@ export default function LandingPage() {
         </motion.div>
       </header>
 
-      <motion.section 
+      <motion.section
         className="relative mt-16 grid gap-6 md:grid-cols-3"
         variants={staggerContainer}
         initial="hidden"
@@ -158,7 +158,7 @@ export default function LandingPage() {
         {heroHighlights.map((card, idx) => (
           <motion.div key={card.title} variants={fadeInUp}>
             <MagicBento delay={0}>
-              <motion.div 
+              <motion.div
                 className="flex items-start justify-between"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -176,7 +176,7 @@ export default function LandingPage() {
                   transition={{ type: 'spring', stiffness: 300 }}
                 />
               </motion.div>
-              <motion.p 
+              <motion.p
                 className="mt-4 text-base text-white/70"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -189,7 +189,7 @@ export default function LandingPage() {
         ))}
       </motion.section>
 
-      <motion.section 
+      <motion.section
         className="relative mt-24 rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.03] backdrop-blur-xl p-8 md:p-12 shadow-2xl overflow-hidden"
         initial={{ opacity: 0, y: 60 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -221,14 +221,14 @@ export default function LandingPage() {
             transition={{ delay: 0.2 }}
             className="flex items-center gap-3 mb-6"
           >
-            <motion.div 
+            <motion.div
               className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-blue-500/30 to-green-500/30 backdrop-blur-sm border border-white/10"
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               <Heart className="w-6 h-6 text-blue-400" />
             </motion.div>
-            <motion.span 
+            <motion.span
               className="text-sm uppercase tracking-[0.3em] text-blue-400/80 font-semibold"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -258,7 +258,7 @@ export default function LandingPage() {
             Nafira aligns with UN Sustainable Development Goal 3 by making nutritional awareness accessible to everyone. Our AI-powered platform democratizes health insights, helping individuals make informed dietary choices that contribute to better health outcomes worldwide.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             className="grid gap-6 md:grid-cols-3"
             variants={staggerContainer}
             initial="hidden"
@@ -266,19 +266,19 @@ export default function LandingPage() {
             viewport={{ once: true, amount: 0.3 }}
           >
             {[
-              { 
-                icon: Users, 
-                title: 'Universal Access', 
+              {
+                icon: Users,
+                title: 'Universal Access',
                 desc: 'Making nutrition tracking accessible to all, regardless of background or income'
               },
-              { 
-                icon: Brain, 
-                title: 'Health Education', 
+              {
+                icon: Brain,
+                title: 'Health Education',
                 desc: 'Empowering individuals with knowledge to make better dietary decisions'
               },
-              { 
-                icon: Globe, 
-                title: 'Global Impact', 
+              {
+                icon: Globe,
+                title: 'Global Impact',
                 desc: 'Contributing to worldwide health improvement through technology'
               }
             ].map((item, idx) => (
@@ -303,7 +303,7 @@ export default function LandingPage() {
         </div>
       </motion.section>
 
-      <motion.section 
+      <motion.section
         className="relative mt-24 grid gap-8 lg:grid-cols-[1.4fr_1fr]"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -318,7 +318,7 @@ export default function LandingPage() {
         >
           <MagicBento className="h-full">
             <div className="flex flex-wrap items-center gap-3">
-              <motion.div 
+              <motion.div
                 className="rounded-full bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.25em] text-accent-soft"
                 whileHover={{ scale: 1.05 }}
               >
@@ -328,7 +328,7 @@ export default function LandingPage() {
               <GradientText className="text-sm">Intelligent Analysis Engine</GradientText>
             </div>
 
-            <motion.div 
+            <motion.div
               className="mt-6 grid gap-6 md:grid-cols-2"
               variants={staggerContainer}
               initial="hidden"
@@ -359,7 +359,7 @@ export default function LandingPage() {
               ))}
             </motion.div>
 
-            <motion.div 
+            <motion.div
               className="mt-10 flex flex-wrap items-center gap-4 rounded-2xl border border-white/5 bg-white/5 p-6"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -367,7 +367,7 @@ export default function LandingPage() {
               transition={{ delay: 0.4 }}
               whileHover={{ scale: 1.02 }}
             >
-              <motion.div 
+              <motion.div
                 className="rounded-2xl bg-black/30 p-3"
                 whileHover={{ rotate: 5 }}
                 transition={{ type: 'spring', stiffness: 300 }}
@@ -389,11 +389,11 @@ export default function LandingPage() {
           transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
         >
           <MagicBento className="relative overflow-hidden border-white/5 bg-white/10 h-full">
-            <motion.div 
-              className="absolute inset-0 opacity-40" 
+            <motion.div
+              className="absolute inset-0 opacity-40"
               aria-hidden
             >
-              <motion.div 
+              <motion.div
                 className="absolute -right-10 top-10 h-48 w-48 rounded-full bg-accent-soft blur-3xl"
                 animate={{
                   scale: [1, 1.2, 1],
@@ -402,7 +402,7 @@ export default function LandingPage() {
                 }}
                 transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
               />
-              <motion.div 
+              <motion.div
                 className="absolute -bottom-16 left-16 h-56 w-56 rounded-full bg-accent-primary blur-3xl"
                 animate={{
                   scale: [1.2, 1, 1.2],
@@ -413,7 +413,7 @@ export default function LandingPage() {
               />
             </motion.div>
             <div className="relative">
-              <motion.p 
+              <motion.p
                 className="text-sm uppercase tracking-[0.3em] text-white/60"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -421,7 +421,7 @@ export default function LandingPage() {
               >
                 Fast by Design
               </motion.p>
-              <motion.h3 
+              <motion.h3
                 className="mt-4 text-3xl font-semibold text-white"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -429,7 +429,7 @@ export default function LandingPage() {
               >
                 <GradientText>Powered by rusetiq/FastVLM-0.5b.</GradientText>
               </motion.h3>
-              <motion.p 
+              <motion.p
                 className="mt-4 text-white/70 leading-relaxed"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -437,7 +437,7 @@ export default function LandingPage() {
               >
                 Experience nutrition tracking reimagined with a powerful and efficient vision language model, trained by us.
               </motion.p>
-              <motion.ul 
+              <motion.ul
                 className="mt-6 space-y-3 text-white/80"
                 variants={staggerContainer}
                 initial="hidden"
@@ -449,7 +449,7 @@ export default function LandingPage() {
                   { icon: TrendingUp, text: 'Higher accuracy as compared to other models.' },
                   { icon: Brain, text: 'Personalized recommendations powered by AI' }
                 ].map((item, idx) => (
-                  <motion.li 
+                  <motion.li
                     key={idx}
                     className="flex items-start gap-2"
                     variants={fadeInUp}
@@ -476,7 +476,7 @@ export default function LandingPage() {
 function BackgroundOrbs() {
   return (
     <div className="pointer-events-none" aria-hidden>
-      <motion.div 
+      <motion.div
         className="absolute -top-20 right-0 h-72 w-72 rounded-full bg-accent-secondary/30 blur-[120px]"
         animate={{
           scale: [1, 1.2, 1],
@@ -484,7 +484,7 @@ function BackgroundOrbs() {
         }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
       />
-      <motion.div 
+      <motion.div
         className="absolute left-10 top-40 h-80 w-80 rounded-full bg-accent-glow/20 blur-[150px]"
         animate={{
           scale: [1.2, 1, 1.2],
@@ -492,7 +492,7 @@ function BackgroundOrbs() {
         }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
       />
-      <motion.div 
+      <motion.div
         className="absolute bottom-10 right-24 h-64 w-64 rounded-full bg-accent-primary/25 blur-[140px]"
         animate={{
           scale: [1, 1.3, 1],

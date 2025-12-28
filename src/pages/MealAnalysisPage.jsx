@@ -12,10 +12,10 @@ import { useAppData } from '../context/AppDataContext.jsx';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
-  show: { 
-    opacity: 1, 
+  show: {
+    opacity: 1,
     y: 0,
-    transition: { 
+    transition: {
       duration: 0.6,
       ease: [0.4, 0, 0.2, 1]
     }
@@ -37,7 +37,7 @@ function CircularHealthScore({ score }) {
   const radius = 70;
   const circumference = 2 * Math.PI * radius;
   const progress = (score / 100) * circumference;
-  
+
   return (
     <motion.div
       initial={{ scale: 0.8, opacity: 0 }}
@@ -52,10 +52,10 @@ function CircularHealthScore({ score }) {
             <stop offset="100%" stopColor="#f54703" />
           </linearGradient>
           <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
             <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
         </defs>
@@ -75,11 +75,11 @@ function CircularHealthScore({ score }) {
           animate={{ strokeDashoffset: circumference - progress }}
           transition={{ duration: 1.4, ease: [0.4, 0, 0.2, 1] }}
         />
-        <motion.text 
-          x="50%" 
-          y="45%" 
-          dominantBaseline="middle" 
-          textAnchor="middle" 
+        <motion.text
+          x="50%"
+          y="45%"
+          dominantBaseline="middle"
+          textAnchor="middle"
           className="text-3xl font-semibold fill-white"
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -87,11 +87,11 @@ function CircularHealthScore({ score }) {
         >
           {score}
         </motion.text>
-        <motion.text 
-          x="50%" 
-          y="60%" 
-          dominantBaseline="middle" 
-          textAnchor="middle" 
+        <motion.text
+          x="50%"
+          y="60%"
+          dominantBaseline="middle"
+          textAnchor="middle"
           className="text-sm fill-white/70"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -119,7 +119,7 @@ export default function MealAnalysisPage() {
     if (analyzing) {
       setDisplayText('');
       setDisplayScore(0);
-      return () => {};
+      return () => { };
     }
     if (result?.advice) {
       setDisplayText('');
@@ -127,7 +127,7 @@ export default function MealAnalysisPage() {
       const fullText = result.advice;
       const words = fullText.split(' ');
       let currentIndex = 0;
-      
+
       const interval = setInterval(() => {
         if (currentIndex < words.length) {
           setDisplayText(words.slice(0, currentIndex + 1).join(' '));
@@ -137,21 +137,23 @@ export default function MealAnalysisPage() {
           clearInterval(interval);
         }
       }, 140);
-      
+
       return () => clearInterval(interval);
     }
-    return () => {};
+    return () => { };
   }, [analyzing, result]);
 
   const handleAnalyze = async (files) => {
     const file = files?.[0];
     if (!file) return;
-    
+
+    // Close modal immediately when file is selected
+    setModalOpen(false);
+
     const imageUrl = URL.createObjectURL(file);
     setUploadedImageUrl(imageUrl);
-    
+
     await startAnalysis(file);
-    setModalOpen(false);
   };
 
   const liveScore = result?.score ?? displayScore;
@@ -165,10 +167,10 @@ export default function MealAnalysisPage() {
   return (
     <div className="min-h-screen bg-background-dark px-4 sm:px-6 lg:px-10 pb-20 pt-10 text-white relative overflow-hidden">
       <DitheredBackground />
-      
+
       <div className="relative z-10 max-w-7xl mx-auto">
         <FluidGlassModal open={modalOpen} onClose={() => setModalOpen(false)} title="Upload or snap a meal">
-          <motion.div 
+          <motion.div
             className="space-y-6 text-white/80"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -176,9 +178,8 @@ export default function MealAnalysisPage() {
           >
             <p className="text-sm leading-relaxed">Upload a clear photo of your meal. Natural lighting and a top-down angle provide the best analysis results.</p>
             <motion.label
-              className={`relative flex flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed ${
-                isDragging ? 'border-accent-primary bg-accent-primary/10' : 'border-white/15 bg-white/5'
-              } p-10 text-center transition-all duration-300 cursor-pointer overflow-hidden group`}
+              className={`relative flex flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed ${isDragging ? 'border-accent-primary bg-accent-primary/10' : 'border-white/15 bg-white/5'
+                } p-10 text-center transition-all duration-300 cursor-pointer overflow-hidden group`}
               onDragOver={(e) => {
                 e.preventDefault();
                 setIsDragging(true);
@@ -225,14 +226,14 @@ export default function MealAnalysisPage() {
           </motion.div>
         </FluidGlassModal>
 
-        <motion.div 
+        <motion.div
           className="flex flex-wrap items-center justify-between gap-4 mb-10"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           <div>
-            <motion.p 
+            <motion.p
               className="text-sm uppercase tracking-[0.3em] text-white/60"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -240,7 +241,7 @@ export default function MealAnalysisPage() {
             >
               Meal Analysis
             </motion.p>
-            <motion.h1 
+            <motion.h1
               className="mt-2 text-4xl font-semibold"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -271,7 +272,7 @@ export default function MealAnalysisPage() {
           </motion.button>
         </motion.div>
 
-        <motion.section 
+        <motion.section
           className="grid gap-8 lg:grid-cols-[1.3fr_0.9fr]"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -295,7 +296,7 @@ export default function MealAnalysisPage() {
                       exit={{ opacity: 0 }}
                     >
                       <motion.div
-                        animate={{ 
+                        animate={{
                           scale: [1, 1.05, 1],
                           rotate: [0, 2, -2, 0]
                         }}
@@ -303,7 +304,7 @@ export default function MealAnalysisPage() {
                       >
                         <ShinyText className="text-2xl">Analyzing your meal...</ShinyText>
                       </motion.div>
-                      <motion.p 
+                      <motion.p
                         className="mt-2 text-sm text-white/70"
                         animate={{ opacity: [0.5, 1, 0.5] }}
                         transition={{ duration: 2, repeat: Infinity }}
@@ -315,8 +316,8 @@ export default function MealAnalysisPage() {
                 )}
               </AnimatePresence>
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               className="mt-6 grid gap-4 md:grid-cols-2"
               variants={staggerContainer}
               initial="hidden"
@@ -337,7 +338,7 @@ export default function MealAnalysisPage() {
                   <p className="mt-2 text-sm text-white/60">Macro and micronutrient distribution</p>
                 </SpotlightCard>
               </motion.div>
-              
+
               <motion.div variants={fadeInUp}>
                 <SpotlightCard className="bg-black/40">
                   <p className="text-xs uppercase tracking-[0.3em] text-white/60">Analysis Status</p>
@@ -366,7 +367,7 @@ export default function MealAnalysisPage() {
               <p className="text-sm uppercase tracking-[0.3em] text-white/60">Nutrition Score</p>
               <GradientText className="text-3xl">{analyzing ? 'Calculating...' : hasAnalysisCompleted ? 'Analysis Complete' : 'Upload to begin'}</GradientText>
             </motion.div>
-            <motion.p 
+            <motion.p
               className="text-white/70"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -376,7 +377,7 @@ export default function MealAnalysisPage() {
             </motion.p>
             <AnimatePresence>
               {macros && hasAnalysisCompleted && (
-                <motion.div 
+                <motion.div
                   className="grid w-full grid-cols-3 gap-3 text-left text-sm text-white/70"
                   initial={{ opacity: 0, y: 20, scale: 0.9 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -408,7 +409,7 @@ export default function MealAnalysisPage() {
 
         <AnimatePresence>
           {hasAnalysisCompleted && (
-            <motion.section 
+            <motion.section
               className="mt-10 grid gap-8 lg:grid-cols-2"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -446,8 +447,8 @@ export default function MealAnalysisPage() {
                     <Sparkles className="text-accent-soft" />
                   </motion.div>
                 </div>
-                
-                <motion.div 
+
+                <motion.div
                   className="space-y-6"
                   variants={staggerContainer}
                   initial="hidden"
@@ -458,7 +459,7 @@ export default function MealAnalysisPage() {
                       <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-3">Detected Ingredients</p>
                       <div className="flex flex-wrap gap-2">
                         {result.ingredients.map((ingredient, idx) => (
-                          <motion.span 
+                          <motion.span
                             key={idx}
                             className="px-3 py-1 rounded-full bg-white/10 text-sm text-white/80 border border-white/10"
                             initial={{ opacity: 0, scale: 0.8 }}
@@ -478,7 +479,7 @@ export default function MealAnalysisPage() {
                       <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-3">Nutritional Strengths</p>
                       <div className="space-y-2">
                         {result.strengths.map((strength, idx) => (
-                          <motion.div 
+                          <motion.div
                             key={idx}
                             className="flex items-start gap-2 text-sm text-green-400"
                             initial={{ opacity: 0, x: -20 }}
@@ -499,7 +500,7 @@ export default function MealAnalysisPage() {
                       <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-3">Suggested Improvements</p>
                       <div className="space-y-2">
                         {result.improvements.map((improvement, idx) => (
-                          <motion.div 
+                          <motion.div
                             key={idx}
                             className="flex items-start gap-2 text-sm text-accent-soft"
                             initial={{ opacity: 0, x: -20 }}
@@ -516,7 +517,7 @@ export default function MealAnalysisPage() {
                   )}
 
                   {hydration && (
-                    <motion.div 
+                    <motion.div
                       variants={fadeInUp}
                       whileHover={{ scale: 1.02 }}
                       className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/70"

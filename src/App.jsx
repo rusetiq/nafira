@@ -9,6 +9,11 @@ import MealAnalysisPage from './pages/MealAnalysisPage';
 import HistoryPage from './pages/HistoryPage';
 import ProfilePage from './pages/ProfilePageEnhanced';
 import DemoPage from './pages/DemoPage';
+import ChildrenPage from './pages/ChildrenPage';
+import SustainabilityPage from './pages/SustainabilityPage';
+import KnowledgePage from './pages/KnowledgePage';
+import ArticleDetailPage from './pages/ArticleDetailPage';
+import ShowcasePage from './pages/ShowcasePage';
 import Navigation from './components/Navigation';
 import VisionModelReadyToast from './components/VisionModelReadyToast';
 import api from './services/api';
@@ -19,7 +24,7 @@ function ProtectedRoute({ children, requireOnboarding = true }) {
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const location = useLocation();
-  
+
   useEffect(() => {
     const checkOnboarding = async () => {
       if (isAuthenticated && requireOnboarding) {
@@ -32,12 +37,12 @@ function ProtectedRoute({ children, requireOnboarding = true }) {
       }
       setCheckingOnboarding(false);
     };
-    
+
     if (!loading) {
       checkOnboarding();
     }
   }, [isAuthenticated, loading, requireOnboarding]);
-  
+
   if (loading || checkingOnboarding) {
     return (
       <div className="min-h-screen bg-background-dark flex items-center justify-center">
@@ -45,27 +50,30 @@ function ProtectedRoute({ children, requireOnboarding = true }) {
       </div>
     );
   }
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
-  
+
   if (requireOnboarding && !onboardingComplete && location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" />;
   }
-  
+
   return children;
 }
 
 function App() {
   const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  const isShowcasePage = location.pathname === '/showcase';
 
   return (
     <div className="app-shell min-h-screen text-white">
-      {isAuthenticated && <Navigation />}
-      {isAuthenticated && <VisionModelReadyToast />}
+      {isAuthenticated && !isShowcasePage && <Navigation />}
+      {isAuthenticated && !isShowcasePage && <VisionModelReadyToast />}
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/showcase" element={<ShowcasePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route
           path="/onboarding"
@@ -104,6 +112,38 @@ function App() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/children"
+          element={
+            <ProtectedRoute>
+              <ChildrenPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sustainability"
+          element={
+            <ProtectedRoute>
+              <SustainabilityPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/knowledge"
+          element={
+            <ProtectedRoute>
+              <KnowledgePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/knowledge/:id"
+          element={
+            <ProtectedRoute>
+              <ArticleDetailPage />
             </ProtectedRoute>
           }
         />
