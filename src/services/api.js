@@ -1,7 +1,4 @@
 const getApiBaseUrl = () => {
-  if (process.env.NODE_ENV === 'production') {
-    return '/api';
-  }
   const hostname = window.location.hostname;
   return `http://${hostname}:5000/api`;
 };
