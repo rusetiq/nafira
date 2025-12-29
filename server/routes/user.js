@@ -76,6 +76,8 @@ router.put(
 
     try {
       const userId = req.user.userId;
+      console.log('[Profile Update] userId:', userId);
+
       const updateData = {};
 
       const allowedFields = [
@@ -98,11 +100,15 @@ router.put(
         }
       });
 
+      console.log('[Profile Update] updateData:', updateData);
+
       userQueries.update.run(updateData, userId);
 
       const updatedUser = userQueries.findById.get(userId);
+      console.log('[Profile Update] updatedUser:', updatedUser);
 
       if (!updatedUser) {
+        console.error('[Profile Update] User not found after update! userId:', userId);
         return res.status(404).json({ error: 'User not found after update' });
       }
 
@@ -193,10 +199,10 @@ router.get('/quick-stats', authenticateToken, (req, res) => {
     const caloriesLeft = 2000 - (todayStats?.calories_today || 0);
     const calorieDelta = yesterdayStats?.calories_yesterday
       ? Math.round(
-          ((todayStats?.calories_today || 0) - yesterdayStats.calories_yesterday) /
-            yesterdayStats.calories_yesterday *
-            100
-        )
+        ((todayStats?.calories_today || 0) - yesterdayStats.calories_yesterday) /
+        yesterdayStats.calories_yesterday *
+        100
+      )
       : 0;
 
     const stats = [
