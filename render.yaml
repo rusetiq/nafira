@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: nafira
+    env: node
+    buildCommand: npm install && npm run build && cd server && npm install
+    startCommand: cd server && NODE_ENV=production node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: HUGGINGFACE_API_KEY
+        sync: false

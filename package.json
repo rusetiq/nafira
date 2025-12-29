@@ -12,7 +12,8 @@
     "server:init": "cd server && npm run init-db",
     "install:all": "npm install && cd server && npm install",
     "dev": "concurrently \"npm start\" \"npm run server\"",
-    "build:prod": "npm run build && cd server && npm install --production"
+    "build:prod": "npm run build && cd server && npm install --production",
+    "start:prod": "cd server && node server.js"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.19",
