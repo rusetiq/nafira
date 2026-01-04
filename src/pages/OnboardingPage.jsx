@@ -122,31 +122,30 @@ export default function OnboardingPage() {
         profileData.goals = profileData.goals.join(', ');
       }
 
-      await api.updateProfile(
-        profileData.name || user.name,
-        profileData.allergies || '',
-        profileData.goals || ''
-      );
-
-      const additionalData = {
-        age: profileData.age,
+      // Convert string values to proper types for numeric fields
+      const updateData = {
+        name: profileData.name || user.name,
+        allergies: profileData.allergies || '',
+        goals: profileData.goals || '',
+        age: profileData.age ? parseInt(profileData.age, 10) : undefined,
         gender: profileData.gender,
-        height: profileData.height,
-        weight: profileData.weight,
+        height: profileData.height ? parseFloat(profileData.height) : undefined,
+        weight: profileData.weight ? parseFloat(profileData.weight) : undefined,
         activity_level: profileData.activity_level,
         dietary_preference: profileData.dietary_preference,
         health_conditions: profileData.health_conditions,
         onboarding_completed: true
       };
 
-      await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/user/profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(additionalData)
+      // Remove undefined values
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] === undefined) {
+          delete updateData[key];
+        }
       });
+
+      // Use api.put() for consistent URL and auth handling
+      await api.put('/user/profile', updateData);
 
       window.location.href = '/dashboard';
     } catch (error) {

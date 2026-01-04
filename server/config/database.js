@@ -71,7 +71,9 @@ function rowToObject(columns, values) {
 
 function queryOne(sql, params = []) {
   const stmt = db.prepare(sql);
-  stmt.bind(params);
+  if (params.length > 0) {
+    stmt.bind(params);
+  }
   const columns = stmt.getColumnNames();
   const values = stmt.step() ? stmt.get() : null;
   stmt.free();
@@ -100,18 +102,20 @@ function getLastInsertId() {
   stmt.step();
   const id = stmt.get()[0];
   stmt.free();
-  return id;
+  return typeof id === 'bigint' ? Number(id) : id;
 }
 
 // User queries
 export const userQueries = {
   create: {
     run: (email, password, name, allergies, goals) => {
-      runQuery(
+      db.run(
         'INSERT INTO users (email, password, name, allergies, goals) VALUES (?, ?, ?, ?, ?)',
         [email, password, name, allergies, goals]
       );
-      return { lastInsertRowid: getLastInsertId() };
+      const lastId = getLastInsertId();
+      saveDatabase();
+      return { lastInsertRowid: lastId };
     }
   },
 
@@ -122,7 +126,7 @@ export const userQueries = {
   findById: {
     get: (id) => queryOne(
       'SELECT id, email, name, allergies, goals, age, gender, height, weight, activity_level, dietary_preference, health_conditions, onboarding_completed, created_at, updated_at FROM users WHERE id = ?',
-      [id]
+      [Number(id)]
     )
   },
 

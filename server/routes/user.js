@@ -12,7 +12,6 @@ import { generateAIFocus, generateDashboardInsight } from '../services/huggingfa
 
 const router = express.Router();
 
-// Get user profile
 router.get('/profile', authenticateToken, (req, res) => {
   try {
     const userId = req.user.userId;

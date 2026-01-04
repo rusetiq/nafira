@@ -22,16 +22,13 @@ router.post('/register',
     const { email, password, name, allergies, goals } = req.body;
 
     try {
-      // Check if user exists
       const existingUser = userQueries.findByEmail.get(email);
       if (existingUser) {
         return res.status(400).json({ error: 'Email already registered' });
       }
 
-      // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Create user
       const result = userQueries.create.run(
         email,
         hashedPassword,
@@ -42,10 +39,8 @@ router.post('/register',
 
       const userId = result.lastInsertRowid;
 
-      // Create default settings
       settingsQueries.create.run(userId, 1, 0, 1);
 
-      // Generate token
       const token = generateToken(userId, email);
 
       res.status(201).json({
