@@ -9,17 +9,14 @@ const __dirname = dirname(__filename);
 const dbPath = process.env.DB_PATH || join(__dirname, '../database/nafira.db');
 const dbDir = dirname(dbPath);
 
-// Ensure database directory exists
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
-// Initialize SQL.js
 const SQL = await initSqlJs();
 
 let db;
 
-// Load or create database
 if (fs.existsSync(dbPath)) {
   const buffer = fs.readFileSync(dbPath);
   db = new SQL.Database(buffer);
@@ -34,25 +31,19 @@ function saveDatabase() {
   fs.writeFileSync(dbPath, buffer);
 }
 
-// Enable foreign keys
 db.run('PRAGMA foreign_keys = ON');
 
-// Initialize database with schema
 export function initDatabase() {
   const schemaPath = join(__dirname, '../database/schema.sql');
   const schema = fs.readFileSync(schemaPath, 'utf-8');
 
   db.exec(schema);
 
-  // Migration: Add processing_preference column if it doesn't exist
   try {
     db.run('ALTER TABLE user_settings ADD COLUMN processing_preference TEXT DEFAULT "auto"');
     saveDatabase();
-  } catch (e) {
-    // Column already exists, ignore
-  }
+  } catch (e) { }
 
-  // Migration: Add nutrition features tables
   try {
     const nutritionMigrationPath = join(__dirname, '../database/add_nutrition_features.sql');
     if (fs.existsSync(nutritionMigrationPath)) {

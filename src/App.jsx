@@ -14,6 +14,7 @@ import SustainabilityPage from './pages/SustainabilityPage';
 import KnowledgePage from './pages/KnowledgePage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
 import ShowcasePage from './pages/ShowcasePage';
+import Showcase2Page from './pages/Showcase2Page';
 import Navigation from './components/Navigation';
 import VisionModelReadyToast from './components/VisionModelReadyToast';
 import api from './services/api';
@@ -65,7 +66,7 @@ function ProtectedRoute({ children, requireOnboarding = true }) {
 function App() {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
-  const isShowcasePage = location.pathname === '/showcase';
+  const isShowcasePage = location.pathname === '/showcase' || location.pathname === '/showcase2';
 
   return (
     <div className="app-shell min-h-screen text-white">
@@ -74,6 +75,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/showcase" element={<ShowcasePage />} />
+        <Route path="/showcase2" element={<Showcase2Page />} />
         <Route path="/login" element={<LoginPage />} />
         <Route
           path="/onboarding"
