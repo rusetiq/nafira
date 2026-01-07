@@ -15,6 +15,7 @@ import KnowledgePage from './pages/KnowledgePage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
 import ShowcasePage from './pages/ShowcasePage';
 import Showcase2Page from './pages/Showcase2Page';
+import MenuOrderPage from './pages/MenuOrderPage';
 import Navigation from './components/Navigation';
 import VisionModelReadyToast from './components/VisionModelReadyToast';
 import api from './services/api';
@@ -150,6 +151,14 @@ function App() {
           }
         />
         <Route path="/demo" element={<DemoPage />} />
+        <Route
+          path="/menu"
+          element={
+            <ProtectedRoute>
+              <MenuOrderPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

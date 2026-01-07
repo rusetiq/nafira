@@ -16,6 +16,7 @@ const menuGroups = [
     label: 'Nutrition',
     items: [
       { to: '/analysis', label: 'Meal Analysis', icon: Camera },
+      { to: '/menu', label: 'Menu & Order', icon: Menu },
       { to: '/history', label: 'History', icon: History },
     ]
   },

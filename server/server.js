@@ -14,6 +14,7 @@ import userRoutes from './routes/user.js';
 import demoRoutes from './routes/demo.js';
 import childrenRoutes from './routes/children.js';
 import sustainabilityRoutes from './routes/sustainability.js';
+import menuRoutes from './routes/menu.js';
 import { initDatabase } from './config/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -69,6 +70,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/demo', demoRoutes);
 app.use('/api/children', childrenRoutes);
 app.use('/api/sustainability', sustainabilityRoutes);
+app.use('/api/menu', menuRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({
