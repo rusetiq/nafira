@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion';
 import { Zap, Leaf, Activity, Globe, Utensils, TrendingUp } from 'lucide-react';
 
-// Noise texture SVG filter
 const NoiseFilter = () => (
     <svg className="hidden">
         <filter id="noise">
@@ -12,7 +11,6 @@ const NoiseFilter = () => (
     </svg>
 );
 
-// Slot machine text animation
 function SlotMachineText({ text, isActive }) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     const [displayText, setDisplayText] = useState(text);
@@ -36,7 +34,6 @@ function SlotMachineText({ text, isActive }) {
     return <span className="font-mono">{displayText}</span>;
 }
 
-// Variable weight number animation
 function VariableNumber({ value, delay = 0 }) {
     const [current, setCurrent] = useState(0);
     const [fontWeight, setFontWeight] = useState(400);
@@ -50,7 +47,6 @@ function VariableNumber({ value, delay = 0 }) {
                         return value;
                     }
                     const step = Math.ceil((value - prev) / 10);
-                    // Stretch font weight based on change speed
                     setFontWeight(400 + step * 50);
                     setTimeout(() => setFontWeight(700), 50);
                     return prev + step;
@@ -68,7 +64,6 @@ function VariableNumber({ value, delay = 0 }) {
     );
 }
 
-// Liquid Glass Tile component
 function GlassTile({ children, className = "", delay = 0, glowing = false, gridArea }) {
     return (
         <motion.div
@@ -84,10 +79,8 @@ function GlassTile({ children, className = "", delay = 0, glowing = false, gridA
                 delay
             }}
         >
-            {/* Frosted glass background */}
             <div className="absolute inset-0 bg-white/[0.03] backdrop-blur-xl" />
 
-            {/* Frosted edge glow that appears on "light sweep" */}
             <motion.div
                 className="absolute inset-0 rounded-2xl"
                 style={{
@@ -98,7 +91,6 @@ function GlassTile({ children, className = "", delay = 0, glowing = false, gridA
                 transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
             />
 
-            {/* Inner orange glow when active */}
             {glowing && (
                 <motion.div
                     className="absolute inset-0 rounded-2xl"
@@ -110,7 +102,6 @@ function GlassTile({ children, className = "", delay = 0, glowing = false, gridA
                 />
             )}
 
-            {/* Border glow */}
             <div
                 className="absolute inset-0 rounded-2xl pointer-events-none"
                 style={{
@@ -121,7 +112,6 @@ function GlassTile({ children, className = "", delay = 0, glowing = false, gridA
                 }}
             />
 
-            {/* Content */}
             <div className="relative z-10 h-full p-6">
                 {children}
             </div>
@@ -129,7 +119,6 @@ function GlassTile({ children, className = "", delay = 0, glowing = false, gridA
     );
 }
 
-// Macro bar component
 function MacroBar({ label, value, max, color, delay = 0 }) {
     const [width, setWidth] = useState(0);
 

@@ -127,8 +127,10 @@ export default function MenuOrderPage() {
             formData.append('image', file);
 
             const token = localStorage.getItem('token');
-            const hostname = window.location.hostname;
-            const response = await fetch(`http://${hostname}:5000/api/menu/analyze`, {
+            const baseUrl = process.env.NODE_ENV === 'production'
+                ? '/api/menu/analyze'
+                : `http://${window.location.hostname}:5000/api/menu/analyze`;
+            const response = await fetch(baseUrl, {
                 method: 'POST',
                 headers: token ? { 'Authorization': `Bearer ${token}` } : {},
                 body: formData
