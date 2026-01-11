@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Book, CheckCircle, Clock } from 'lucide-react';
+import { Book, Clock } from 'lucide-react';
 import MagicBento from '../components/MagicBento';
 import GradientText from '../components/GradientText';
 import DitheredBackground from '../components/DitheredBackground';
@@ -58,8 +58,6 @@ export default function KnowledgePage() {
             content: 'Benefits of eating seasonal produce...'
         }
     ]);
-
-    const categories = [...new Set(articles.map(a => a.category))];
 
     const getDifficultyColor = (difficulty) => {
         switch (difficulty) {

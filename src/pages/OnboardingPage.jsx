@@ -88,8 +88,8 @@ export default function OnboardingPage() {
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(false);
   const [direction, setDirection] = useState(1);
-  const { user, updateUserProfile } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  useNavigate(); // Keep hook call for React rules, but don't assign
 
   const currentQuestion = questions[currentStep];
   const isLastStep = currentStep === questions.length - 1;
@@ -174,20 +174,20 @@ export default function OnboardingPage() {
 
   const canProceed = () => {
     if (currentQuestion.type === 'welcome') return true;
-    
+
     if (currentQuestion.type === 'form') {
       return currentQuestion.fields
         .filter(f => f.required)
         .every(f => answers[f.name]);
     }
-    
+
     if (currentQuestion.type === 'quiz') {
       if (currentQuestion.multiple) {
         return answers[currentQuestion.field]?.length > 0;
       }
       return !!answers[currentQuestion.field];
     }
-    
+
     return true;
   };
 
@@ -212,8 +212,8 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-background-dark text-white px-4 sm:px-6 py-8 sm:py-12 relative overflow-hidden">
       <DitheredBackground />
-      
-      <motion.div 
+
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -221,7 +221,7 @@ export default function OnboardingPage() {
       >
         <div className="mb-8 sm:mb-12">
           <div className="flex justify-between items-center mb-3">
-            <motion.span 
+            <motion.span
               key={currentStep}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -229,7 +229,7 @@ export default function OnboardingPage() {
             >
               Step {currentStep + 1} of {questions.length}
             </motion.span>
-            <motion.span 
+            <motion.span
               key={`${currentStep}-percent`}
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -242,11 +242,11 @@ export default function OnboardingPage() {
             <motion.div
               className="h-full bg-gradient-to-r from-accent-primary via-accent-secondary to-accent-primary bg-[length:200%_100%]"
               initial={{ width: 0 }}
-              animate={{ 
+              animate={{
                 width: `${((currentStep + 1) / questions.length) * 100}%`,
                 backgroundPosition: ['0% 0%', '100% 0%']
               }}
-              transition={{ 
+              transition={{
                 width: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
                 backgroundPosition: { duration: 2, repeat: Infinity, ease: 'linear' }
               }}
@@ -262,20 +262,20 @@ export default function OnboardingPage() {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ 
+            transition={{
               duration: 0.4,
               ease: [0.4, 0, 0.2, 1]
             }}
             className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.03] backdrop-blur-xl p-6 sm:p-8 md:p-12 shadow-2xl"
           >
             {currentQuestion.type === 'welcome' && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
                 className="text-center space-y-5"
               >
-                <motion.div 
+                <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.3, type: 'spring', stiffness: 200, damping: 15 }}
@@ -292,7 +292,7 @@ export default function OnboardingPage() {
                   <GradientText className="text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1]">
                     {currentQuestion.title}
                   </GradientText>
-                  <motion.p 
+                  <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
@@ -305,14 +305,14 @@ export default function OnboardingPage() {
             )}
 
             {currentQuestion.type === 'form' && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1 }}
                 className="space-y-8"
               >
                 <div className="text-center mb-8">
-                  <motion.h2 
+                  <motion.h2
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
@@ -321,7 +321,7 @@ export default function OnboardingPage() {
                     {currentQuestion.title}
                   </motion.h2>
                   {currentQuestion.subtitle && (
-                    <motion.p 
+                    <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.3 }}
@@ -333,7 +333,7 @@ export default function OnboardingPage() {
                 </div>
                 <div className="grid gap-5 md:grid-cols-2">
                   {currentQuestion.fields.map((field, idx) => (
-                    <motion.div 
+                    <motion.div
                       key={field.name}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -370,7 +370,7 @@ export default function OnboardingPage() {
             )}
 
             {currentQuestion.type === 'quiz' && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1 }}
@@ -378,7 +378,7 @@ export default function OnboardingPage() {
               >
                 <div className="text-center mb-8">
                   {currentQuestion.icon && (
-                    <motion.div 
+                    <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.2, type: 'spring', stiffness: 200, damping: 15 }}
@@ -387,7 +387,7 @@ export default function OnboardingPage() {
                       <currentQuestion.icon className="w-10 h-10 text-accent-primary" />
                     </motion.div>
                   )}
-                  <motion.h2 
+                  <motion.h2
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
@@ -414,11 +414,10 @@ export default function OnboardingPage() {
                           ? handleMultipleAnswer(currentQuestion.field, option.value)
                           : handleAnswer(currentQuestion.field, option.value)
                         }
-                        className={`group relative p-5 rounded-2xl border-2 transition-all duration-300 text-left overflow-hidden ${
-                          isSelected
-                            ? 'border-accent-primary bg-gradient-to-br from-accent-primary/20 to-accent-secondary/10 shadow-lg shadow-accent-primary/20'
-                            : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
-                        }`}
+                        className={`group relative p-5 rounded-2xl border-2 transition-all duration-300 text-left overflow-hidden ${isSelected
+                          ? 'border-accent-primary bg-gradient-to-br from-accent-primary/20 to-accent-secondary/10 shadow-lg shadow-accent-primary/20'
+                          : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
+                          }`}
                       >
                         <motion.div
                           initial={false}
@@ -440,7 +439,7 @@ export default function OnboardingPage() {
               </motion.div>
             )}
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}

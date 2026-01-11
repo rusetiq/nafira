@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogIn, UserPlus, Droplet } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import GradientText from '../components/GradientText';
 import DitheredBackground from '../components/DitheredBackground';
 
 export default function LoginPage() {
@@ -17,7 +16,7 @@ export default function LoginPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   const { login, register } = useAuth();
   const navigate = useNavigate();
 
@@ -68,14 +67,14 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background-dark flex items-center justify-center px-4 sm:px-6 py-12 relative overflow-hidden">
       <DitheredBackground />
-      
+
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
         className="w-full max-w-md relative z-10"
       >
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
@@ -97,7 +96,7 @@ export default function LoginPage() {
           <h1 className="text-5xl sm:text-6xl font-bold mb-2 leading-[1.1] bg-gradient-to-r from-accent-primary via-accent-secondary to-accent-primary bg-clip-text text-transparent" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
             NAFIRA
           </h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -118,11 +117,10 @@ export default function LoginPage() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setIsLogin(true)}
-              className={`flex-1 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide transition-all duration-300 ${
-                isLogin
+              className={`flex-1 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide transition-all duration-300 ${isLogin
                   ? 'bg-gradient-to-r from-accent-primary to-accent-secondary text-white shadow-lg shadow-accent-primary/30'
                   : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/10'
-              }`}
+                }`}
             >
               <LogIn className="inline-block mr-2 h-4 w-4" />
               Login
@@ -131,11 +129,10 @@ export default function LoginPage() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setIsLogin(false)}
-              className={`flex-1 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide transition-all duration-300 ${
-                !isLogin
+              className={`flex-1 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide transition-all duration-300 ${!isLogin
                   ? 'bg-gradient-to-r from-accent-primary to-accent-secondary text-white shadow-lg shadow-accent-primary/30'
                   : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/10'
-              }`}
+                }`}
             >
               <UserPlus className="inline-block mr-2 h-4 w-4" />
               Register
@@ -266,7 +263,7 @@ export default function LoginPage() {
           )}
         </motion.div>
 
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}

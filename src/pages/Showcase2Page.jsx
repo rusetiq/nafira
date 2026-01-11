@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion';
-import { Zap, Leaf, Activity, Globe, Utensils, TrendingUp } from 'lucide-react';
+import { Zap, Leaf, Activity, Utensils, TrendingUp } from 'lucide-react';
 
 const NoiseFilter = () => (
     <svg className="hidden">

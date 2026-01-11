@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, Book, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Clock } from 'lucide-react';
 import MagicBento from '../components/MagicBento';
 import GradientText from '../components/GradientText';
 import DitheredBackground from '../components/DitheredBackground';

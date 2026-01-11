@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, TrendingUp, Baby, AlertCircle, Scale, Ruler, Utensils, Activity, ArrowLeft, X, Lightbulb } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Plus, TrendingUp, Baby, AlertCircle, Scale, Ruler, Utensils, Activity, ArrowLeft, Lightbulb } from 'lucide-react';
 import MagicBento from '../components/MagicBento';
 import GradientText from '../components/GradientText';
 import FluidGlassModal from '../components/FluidGlassModal';

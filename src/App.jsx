@@ -22,7 +22,7 @@ import api from './services/api';
 import './index.css';
 
 function ProtectedRoute({ children, requireOnboarding = true }) {
-  const { isAuthenticated, loading, user } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const location = useLocation();

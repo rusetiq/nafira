@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Sparkles, CheckCircle, TrendingUp, Droplet, Zap } from 'lucide-react';
 import FluidGlassModal from '../components/FluidGlassModal';

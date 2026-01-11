@@ -2,8 +2,6 @@ import jsPDF from 'jspdf';
 import api from './api.js';
 
 const BRAND_COLOR = [245, 71, 3];
-const ACCENT_SOFT = [253, 139, 93];
-const GRADIENT_LIGHT = [255, 194, 153];
 const DARK_BG = [18, 18, 18];
 const PAGE_BG = [10, 10, 10];
 const CARD_BG = [28, 28, 28];
@@ -38,17 +36,17 @@ const addFooter = (doc, pageWidth, pageHeight, pageNum, totalPages) => {
   doc.setFontSize(7);
   doc.setTextColor(...TEXT_MUTED);
   doc.text(
-    `Generated on ${new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    `Generated on ${new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     })}`,
     20,
     pageHeight - 7
   );
 
   doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
-  
+
   doc.setTextColor(...TEXT_SECONDARY);
   doc.text('nafira.app', pageWidth - 20, pageHeight - 7, { align: 'right' });
 };
@@ -56,7 +54,7 @@ const addFooter = (doc, pageWidth, pageHeight, pageNum, totalPages) => {
 const addCard = (doc, x, y, width, height) => {
   doc.setFillColor(...CARD_BG);
   doc.roundedRect(x, y, width, height, 2, 2, 'F');
-  
+
   doc.setDrawColor(...CARD_BORDER);
   doc.setLineWidth(0.2);
   doc.roundedRect(x, y, width, height, 2, 2, 'S');
@@ -78,18 +76,18 @@ const calculateMealCardHeight = (doc, meal, width) => {
   const cardPadding = 8;
   const scoreWidth = 35;
   const availableWidth = width - (cardPadding * 2) - scoreWidth;
-  
+
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   const titleLines = doc.splitTextToSize(meal.title, availableWidth);
-  
+
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
   const notesLines = doc.splitTextToSize(meal.notes, availableWidth);
-  
+
   const titleHeight = titleLines.length * 5;
   const notesHeight = notesLines.length * 3.5;
-  
+
   return Math.max(32, titleHeight + notesHeight + 22);
 };
 
@@ -97,19 +95,19 @@ const addMealCard = (doc, meal, x, y, width) => {
   const cardPadding = 8;
   const scoreWidth = 35;
   const availableWidth = width - (cardPadding * 2) - scoreWidth;
-  
+
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   const titleLines = doc.splitTextToSize(meal.title, availableWidth);
-  
+
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
   const notesLines = doc.splitTextToSize(meal.notes, availableWidth);
-  
+
   const titleHeight = titleLines.length * 5;
   const notesHeight = notesLines.length * 3.5;
   const cardHeight = Math.max(32, titleHeight + notesHeight + 22);
-  
+
   addCard(doc, x, y, width, cardHeight);
 
   doc.setFontSize(12);
@@ -134,13 +132,13 @@ const addMealCard = (doc, meal, x, y, width) => {
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(...BRAND_COLOR);
   doc.text(meal.score.toString(), x + width - 17, y + 22, { align: 'center' });
-  
+
   return cardHeight;
 };
 
 const drawChart = (doc, data, x, y, width, height, type = 'line') => {
   if (!data || data.length === 0) return;
-  
+
   addCard(doc, x, y, width, height);
 
   const chartX = x + 12;
@@ -278,7 +276,7 @@ export const exportToPDF = async (elementId, fileName) => {
 
     meals.forEach((meal, idx) => {
       const cardHeight = calculateMealCardHeight(doc, meal, contentWidth);
-      
+
       if (yPos + cardHeight > maxY) {
         addFooter(doc, pageWidth, pageHeight, currentPage, '?');
         doc.addPage();
@@ -311,7 +309,7 @@ export const exportToPDF = async (elementId, fileName) => {
       badges.forEach((badge, idx) => {
         const col = idx % 3;
         const row = Math.floor(idx / 3);
-        
+
         if (col === 0 && row > 0) {
           yPos += 42;
         }

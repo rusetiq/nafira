@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Sparkles, Activity, Baby, Leaf, BookOpen, TrendingUp, Droplet, Zap,
-    Camera, Upload, Clock, Calendar, ChevronRight, Star, Check, Image,
+    Camera, Clock, Calendar, ChevronRight, Star, Image,
     BarChart3, Users, Target, Award, Utensils, Apple, Pizza, Heart
 } from 'lucide-react';
 

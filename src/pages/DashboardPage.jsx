@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Coffee, CheckCircle, Heart, Users, TrendingUp, X, Sparkles } from 'lucide-react';
+import { Upload, Coffee, CheckCircle, Heart, Users, TrendingUp } from 'lucide-react';
 import GradientText from '../components/GradientText';
 import SpotlightCard from '../components/SpotlightCard';
 import MagicBento from '../components/MagicBento';
