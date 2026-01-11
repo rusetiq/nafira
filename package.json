@@ -4,15 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "cd server && node server.js",
+    "build": "npm run build:frontend && npm run install:server",
+    "build:frontend": "react-scripts build",
+    "install:server": "cd server && npm install --omit=dev",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "cd server && npm run dev",
     "server:init": "cd server && npm run init-db",
     "install:all": "npm install && cd server && npm install",
     "dev": "concurrently \"npm start\" \"npm run server\"",
-    "build:prod": "npm run build && cd server && npm install --production"
+    "dev:start": "react-scripts start"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.19",
