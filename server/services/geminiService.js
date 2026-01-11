@@ -14,8 +14,8 @@ const VISION_MODEL_URL = `http://${VISION_MODEL_HOST}:${VISION_MODEL_PORT}`;
 
 const OPENROUTER_MODELS = [
   'google/gemini-2.0-flash-exp:free',
-  'google/gemma-2-9b-it:free',
-  'google/gemma-3-4b-it:free'
+  'meta-llama/llama-3.2-11b-vision-instruct:free',
+  'qwen/qwen-2.5-vl-72b-instruct:free'
 ];
 
 async function checkVisionModelAvailable() {

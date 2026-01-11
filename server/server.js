@@ -23,6 +23,9 @@ const PORT = process.env.PORT || 5000;
 const HOST = '0.0.0.0';
 const app = express();
 
+// Trust Railway's load balancer
+app.set('trust proxy', 1);
+
 initDatabase();
 
 
