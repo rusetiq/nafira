@@ -13,14 +13,10 @@ const VISION_MODEL_PORT = process.env.VISION_MODEL_PORT || 5001;
 const VISION_MODEL_HOST = process.env.VISION_MODEL_HOST || 'localhost';
 const VISION_MODEL_URL = `http://${VISION_MODEL_HOST}:${VISION_MODEL_PORT}`;
 
-// OpenRouter free models (vision-capable first)
+// OpenRouter free VISION models only
 const OPENROUTER_MODELS = [
   'google/gemini-2.0-flash-exp:free',
-  'qwen/qwen-2.5-vl-7b-instruct:free',
-  'google/gemma-3-27b-it:free',
-  'google/gemma-3-12b-it:free',
-  'moonshotai/kimi-k2:free',
-  'qwen/qwen3-4b:free'
+  'qwen/qwen-2.5-vl-7b-instruct:free'
 ];
 
 async function checkVisionModelAvailable() {
