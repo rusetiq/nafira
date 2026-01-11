@@ -4,6 +4,7 @@ import axios from 'axios';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,10 +13,14 @@ const VISION_MODEL_PORT = process.env.VISION_MODEL_PORT || 5001;
 const VISION_MODEL_HOST = process.env.VISION_MODEL_HOST || 'localhost';
 const VISION_MODEL_URL = `http://${VISION_MODEL_HOST}:${VISION_MODEL_PORT}`;
 
+// OpenRouter free models (vision-capable first)
 const OPENROUTER_MODELS = [
   'google/gemini-2.0-flash-exp:free',
-  'meta-llama/llama-3.2-11b-vision-instruct:free',
-  'qwen/qwen-2.5-vl-72b-instruct:free'
+  'qwen/qwen-2.5-vl-7b-instruct:free',
+  'google/gemma-3-27b-it:free',
+  'google/gemma-3-12b-it:free',
+  'moonshotai/kimi-k2:free',
+  'qwen/qwen3-4b:free'
 ];
 
 async function checkVisionModelAvailable() {
@@ -169,16 +174,69 @@ async function analyzeWithOpenRouter(imagePath) {
   return null;
 }
 
+// Google AI Gemini fallback (uses GEMINI_API_KEY)
+async function analyzeWithGoogleGemini(imagePath) {
+  if (!process.env.GEMINI_API_KEY) {
+    console.warn('[GoogleGemini] GEMINI_API_KEY not set.');
+    return null;
+  }
+
+  try {
+    console.log('[GoogleGemini] Starting analysis with Google AI...');
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+    const imageBuffer = await sharp(imagePath)
+      .resize(1024, 1024, { fit: 'inside' })
+      .jpeg({ quality: 80 })
+      .toBuffer();
+
+    const base64Image = imageBuffer.toString('base64');
+
+    const prompt = `Analyze this meal image and provide a detailed nutritional assessment. Return ONLY a JSON object with: { "name": "descriptive meal name", "score": health score 0-100, "carbs": grams, "protein": grams, "fats": grams, "calories": kcal, "hydration": 0-100, "advice": "brief nutrition advice", "ingredients": ["ingredient1", "ingredient2"], "strengths": ["strength1"], "improvements": ["improvement1"] }`;
+
+    const result = await model.generateContent([
+      prompt,
+      { inlineData: { mimeType: 'image/jpeg', data: base64Image } }
+    ]);
+
+    const text = result.response.text();
+    console.log('[GoogleGemini] Raw response:', text);
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      const normalized = normalizeAnalysis(parsed);
+      console.log('[GoogleGemini] Normalized analysis:', JSON.stringify(normalized, null, 2));
+      return normalized;
+    }
+
+    console.warn('[GoogleGemini] No JSON found in response.');
+  } catch (error) {
+    console.error('[GoogleGemini] Error:', error.message);
+  }
+
+  return null;
+}
+
 export async function analyzeMealWithAI(imagePath, processingPreference = 'auto') {
   try {
     console.log('[Analyzer] Starting meal analysis...', { imagePath, processingPreference });
 
+    // Try OpenRouter first
     if (processingPreference !== 'device') {
       const cloud = await analyzeWithOpenRouter(imagePath);
       if (cloud) return cloud;
-      console.log('[Analyzer] Cloud failed, trying device...');
+      console.log('[Analyzer] OpenRouter failed, trying Google Gemini...');
+
+      // Try Google AI Gemini as backup
+      const gemini = await analyzeWithGoogleGemini(imagePath);
+      if (gemini) return gemini;
+      console.log('[Analyzer] Google Gemini failed, trying device...');
     }
 
+    // Try device model
     if (processingPreference !== 'cloud') {
       const device = await analyzeWithVisionModel(imagePath);
       if (device) return device;
