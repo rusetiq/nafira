@@ -1,7 +1,3 @@
-// Sustainability Service
-// Calculate environmental impact of meals
-
-// Carbon footprint data (kg CO2 per kg of food)
 const carbonFootprintData = {
     // Animal products
     beef: 27.0,
@@ -37,7 +33,6 @@ const carbonFootprintData = {
     pasta: 1.5,
 };
 
-// Water footprint data (liters per serving - scaled for user-friendly display)
 const waterFootprintData = {
     beef: 150,
     lamb: 100,
@@ -66,23 +61,20 @@ export function estimateCarbonFootprint(ingredients) {
     for (const ingredient of ingredients) {
         const ingredientLower = ingredient.toLowerCase();
 
-        // Find matching carbon data
         for (const [food, carbon] of Object.entries(carbonFootprintData)) {
             if (ingredientLower.includes(food)) {
-                // Assume 100g per ingredient as default
-                totalCarbon += (carbon * 0.1); // 0.1 kg = 100g
+                totalCarbon += (carbon * 0.1);
                 matchedIngredients++;
                 break;
             }
         }
     }
 
-    // If no matches, use average
     if (matchedIngredients === 0) {
-        totalCarbon = 2.0; // Average meal carbon footprint
+        totalCarbon = 2.0;
     }
 
-    return Math.round(totalCarbon * 100) / 100; // Round to 2 decimals
+    return Math.round(totalCarbon * 100) / 100;
 }
 
 export function estimateWaterFootprint(ingredients) {
@@ -96,7 +88,7 @@ export function estimateWaterFootprint(ingredients) {
 
         for (const [food, water] of Object.entries(waterFootprintData)) {
             if (ingredientLower.includes(food)) {
-                totalWater += (water * 0.1); // 0.1 kg = 100g
+                totalWater += (water * 0.1);
                 matchedIngredients++;
                 break;
             }
@@ -104,7 +96,7 @@ export function estimateWaterFootprint(ingredients) {
     }
 
     if (matchedIngredients === 0) {
-        totalWater = 500; // Average meal water footprint
+        totalWater = 500;
     }
 
     return Math.round(totalWater);
@@ -128,7 +120,6 @@ export function isPlantBased(ingredients) {
 }
 
 export function isSeasonalFood(ingredient, month = new Date().getMonth()) {
-    // Seasonal food data (simplified for Northern Hemisphere)
     const seasonalFoods = {
         winter: ['cabbage', 'kale', 'brussels sprouts', 'citrus', 'orange', 'grapefruit', 'pomegranate', 'squash', 'sweet potato'],
         spring: ['asparagus', 'peas', 'artichoke', 'strawberry', 'rhubarb', 'spinach', 'lettuce'],
@@ -147,33 +138,27 @@ export function isSeasonalFood(ingredient, month = new Date().getMonth()) {
 }
 
 export function calculateSustainabilityScore(ingredients) {
-    let score = 40; // Lower base score
+    let score = 40;
 
     const carbon = estimateCarbonFootprint(ingredients);
     const water = estimateWaterFootprint(ingredients);
     const plantBased = isPlantBased(ingredients);
 
-    // Carbon footprint scoring (lower is better)
     if (carbon < 1) score += 25;
     else if (carbon < 2) score += 15;
     else if (carbon < 3) score += 5;
     else if (carbon > 5) score -= 15;
     else if (carbon > 3) score -= 5;
 
-    // Water footprint scoring (adjusted for new values)
     if (water < 20) score += 15;
     else if (water < 50) score += 5;
     else if (water > 100) score -= 10;
     else if (water > 50) score -= 5;
-
-    // Plant-based bonus (reduced)
     if (plantBased) score += 15;
 
-    // Seasonal bonus
     const seasonalCount = ingredients.filter(ing => isSeasonalFood(ing)).length;
-    score += Math.min(seasonalCount * 3, 10); // Cap at 10
+    score += Math.min(seasonalCount * 3, 10);
 
-    // Clamp between 0 and 100
     return Math.max(0, Math.min(100, Math.round(score)));
 }
 
