@@ -12,6 +12,12 @@ A modern nutrition tracking application powered by AI that provides personalized
 - **Gamification**: Earn badges and maintain tracking streaks
 - **Secure Authentication**: JWT-based user authentication with bcrypt password hashing
 
+## Impact
+
+- **Sustainable Food Dashboard**: Track the environmental footprint of your dietary choices and promote eco-friendly eating habits
+- **Impact Score**: A holistic metric that evaluates the nutritional quality and environmental sustainability of your meals
+- **Curated Wellness Library**: Access a library of expert resources on metabolic health, nutrition, and sustainable living
+
 ## Tech Stack
 
 **Frontend**
@@ -34,7 +40,7 @@ A modern nutrition tracking application powered by AI that provides personalized
 
 - Node.js (v16 or higher)
 - npm
-- Administrator privileges (for port 80 on frontend)
+
 
 ### Installation
 
@@ -54,12 +60,14 @@ DB_PATH=./database/nafira.db
 UPLOAD_PATH=./uploads
 GEMINI_API_KEY=your-gemini-api-key-here
 HUGGINGFACE_API_KEY=your-huggingface-api-key-optional
+# Frontend origin(s) allowed to call the API with credentials (cookies/Authorization).
+# Comma-separated list.
+CORS_ORIGIN=http://localhost:5000,http://127.0.0.1:5000
 ```
 
 Create `.env` in root:
 ```env
 REACT_APP_API_URL=http://localhost:5000/api
-PORT=80
 ```
 
 3. **Initialize Database**
@@ -81,7 +89,7 @@ npm run dev
 ```
 
 Access at:
-- Frontend: http://localhost:80
+- App (frontend + API): http://localhost:5000
 - Backend API: http://localhost:5000/api
 
 ## Internet Accessibility
@@ -174,7 +182,7 @@ Processes meal photos to extract:
 
 ### Frontend
 ```bash
-PORT=80 npm start
+npm start
 ```
 
 ### Backend

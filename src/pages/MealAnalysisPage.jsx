@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Sparkles, CheckCircle, TrendingUp, Droplet, Zap } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
+import { Upload, Sparkles, CheckCircle, TrendingUp, Droplet, Zap, Share2 } from 'lucide-react';
 import FluidGlassModal from '../components/FluidGlassModal';
 import MagicBento from '../components/MagicBento';
 import SpotlightCard from '../components/SpotlightCard';
 import ShinyText from '../components/ShinyText';
 import GradientText from '../components/GradientText';
 import TargetCursor from '../components/TargetCursor';
-import DitheredBackground from '../components/DitheredBackground';
+import ShareToStoryModal from '../components/ShareToStoryModal';
+import LegalDisclaimer from '../components/LegalDisclaimer';
 import { useAppData } from '../context/AppDataContext.jsx';
 
 const fadeInUp = {
@@ -106,6 +107,7 @@ function CircularHealthScore({ score }) {
 
 export default function MealAnalysisPage() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const [displayText, setDisplayText] = useState('');
   const [displayScore, setDisplayScore] = useState(0);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
@@ -114,6 +116,39 @@ export default function MealAnalysisPage() {
   const { analysisState, startAnalysis } = useAppData();
   const analyzing = analysisState.running;
   const result = analysisState.result;
+
+  // Cursor Logic
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+  const [cursorVariant, setCursorVariant] = useState("default");
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    }
+    window.addEventListener("mousemove", moveCursor);
+    return () => window.removeEventListener("mousemove", moveCursor);
+  }, [mouseX, mouseY]);
+
+  const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
+
+  const cursorVariants = {
+    default: {
+      height: 12, width: 12, x: -6, y: -6,
+      backgroundColor: "#fff", mixBlendMode: "difference"
+    },
+    hover: {
+      height: 80, width: 80, x: -40, y: -40,
+      backgroundColor: "transparent", border: "1px solid #f54703",
+      mixBlendMode: "difference"
+    }
+  };
+
+  const textEnter = () => setCursorVariant("hover");
+  const textLeave = () => setCursorVariant("default");
 
   useEffect(() => {
     if (analyzing) {
@@ -147,12 +182,9 @@ export default function MealAnalysisPage() {
     const file = files?.[0];
     if (!file) return;
 
-    // Close modal immediately when file is selected
     setModalOpen(false);
-
     const imageUrl = URL.createObjectURL(file);
     setUploadedImageUrl(imageUrl);
-
     await startAnalysis(file);
   };
 
@@ -160,245 +192,125 @@ export default function MealAnalysisPage() {
   const displayImage = uploadedImageUrl || result?.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1000&q=80";
   const macros = result?.macros;
   const hydration = result?.hydration;
-
   const adviceText = displayText || result?.advice || '';
   const hasAnalysisCompleted = result && !analyzing;
 
   return (
-    <div className="min-h-screen bg-background-dark px-4 sm:px-6 lg:px-10 pb-20 pt-10 text-white relative overflow-hidden">
-      <DitheredBackground />
+    <div className="min-h-screen bg-[#050505] px-4 sm:px-6 lg:px-10 pb-20 pt-10 text-white relative overflow-hidden font-display cursor-none">
+      {/* Custom Cursor */}
+      <motion.div
+        className="hidden lg:block fixed top-0 left-0 rounded-full pointer-events-none z-[9999]"
+        variants={cursorVariants}
+        animate={cursorVariant}
+        style={{ translateX: cursorX, translateY: cursorY }}
+      />
+
+      {/* Ambient Background */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <FloatingShape color="rgba(245, 71, 3, 0.05)" size={800} top="-20%" right="-10%" delay={0} />
+        <FloatingShape color="rgba(30, 64, 175, 0.05)" size={600} bottom="-10%" left="10%" delay={4} />
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
         <FluidGlassModal open={modalOpen} onClose={() => setModalOpen(false)} title="Upload or snap a meal">
-          <motion.div
-            className="space-y-6 text-white/80"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
+          <motion.div className="space-y-6 text-white/80">
             <p className="text-sm leading-relaxed">Upload a clear photo of your meal. Natural lighting and a top-down angle provide the best analysis results.</p>
             <motion.label
               className={`relative flex flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed ${isDragging ? 'border-accent-primary bg-accent-primary/10' : 'border-white/15 bg-white/5'
                 } p-10 text-center transition-all duration-300 cursor-pointer overflow-hidden group`}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setIsDragging(true);
-              }}
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
               onDragLeave={() => setIsDragging(false)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setIsDragging(false);
-                handleAnalyze(e.dataTransfer.files);
-              }}
+              onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleAnalyze(e.dataTransfer.files); }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              onMouseEnter={textEnter} onMouseLeave={textLeave}
             >
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-accent-primary/10 to-accent-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              />
-              <motion.div
-                animate={isDragging ? { scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] } : {}}
-                transition={{ duration: 0.5, repeat: isDragging ? Infinity : 0 }}
-              >
-                <Upload className="h-10 w-10 text-accent-soft relative z-10" />
-              </motion.div>
+              <Upload className="h-10 w-10 text-accent-soft relative z-10" />
               <span className="text-base relative z-10">Drag & drop a meal photo or tap to browse</span>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleAnalyze(e.target.files)}
-              />
-              <motion.button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  fileInputRef.current?.click();
-                }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative z-10 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/70 hover:border-accent-primary hover:bg-white/10 transition-all duration-300"
-              >
-                Browse files
-              </motion.button>
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleAnalyze(e.target.files)} />
             </motion.label>
           </motion.div>
         </FluidGlassModal>
 
-        <motion.div
-          className="flex flex-wrap items-center justify-between gap-4 mb-10"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div>
-            <motion.p
-              className="text-sm uppercase tracking-[0.3em] text-white/60"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              Meal Analysis
-            </motion.p>
-            <motion.h1
-              className="mt-2 text-4xl font-semibold"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              AI-Powered Nutrition Insights
-            </motion.h1>
+        <ShareToStoryModal
+          open={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          mealData={{ name: result?.name || "My Healthy Meal", score: liveScore, macros: macros, image: displayImage }}
+        />
+
+        <motion.div className="flex flex-wrap items-center justify-between gap-4 mb-10" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+          <div onMouseEnter={textEnter} onMouseLeave={textLeave}>
+            <span className="text-[#f54703] font-mono text-xs uppercase tracking-[0.2em] mb-2 block">Meal Analysis</span>
+            <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tighter leading-[0.9]">
+              Food Intelligence
+            </h1>
           </div>
-          <motion.button
-            onClick={() => setModalOpen(true)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="group relative flex items-center gap-3 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-all duration-300 hover:border-accent-soft hover:bg-white/10 overflow-hidden"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-accent-primary/10 to-accent-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            />
-            <motion.div
-              animate={analyzing ? { rotate: 360 } : {}}
-              transition={{ duration: 2, repeat: analyzing ? Infinity : 0, ease: 'linear' }}
-            >
-              <Upload size={18} className="relative z-10" />
-            </motion.div>
-            <span className="relative z-10">{analyzing ? 'Analyzing...' : 'Upload meal'}</span>
-          </motion.button>
+          <div className="flex gap-4">
+            {hasAnalysisCompleted && (
+              <motion.button onClick={() => setShareModalOpen(true)} whileHover={{ scale: 1.05 }} onMouseEnter={textEnter} onMouseLeave={textLeave} className="px-6 py-3 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all flex items-center gap-2 font-bold uppercase text-xs tracking-widest">
+                <Share2 size={16} /> Share
+              </motion.button>
+            )}
+            <motion.button onClick={() => setModalOpen(true)} whileHover={{ scale: 1.05 }} onMouseEnter={textEnter} onMouseLeave={textLeave} className="px-6 py-3 bg-[#f54703] text-black rounded-full font-bold uppercase text-xs tracking-widest flex items-center gap-2">
+              {analyzing ? <span className="animate-spin"><Upload size={16} /></span> : <Upload size={16} />}
+              {analyzing ? 'Analyzing...' : 'Upload Meal'}
+            </motion.button>
+          </div>
         </motion.div>
 
-        <motion.section
-          className="grid gap-8 lg:grid-cols-[1.3fr_0.9fr]"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <MagicBento className="relative overflow-hidden">
-            <motion.div
-              className="relative h-72 rounded-3xl border border-white/10 bg-cover bg-center overflow-hidden"
-              style={{ backgroundImage: `url(${displayImage})` }}
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: 'spring', stiffness: 300 }}
-            >
+        <motion.section className="grid gap-8 lg:grid-cols-[1.3fr_0.9fr]" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}>
+          <MagicBento className="relative overflow-hidden border-white/10 bg-[#0d0d0e]/50">
+            <motion.div className="relative h-72 rounded-3xl border border-white/10 bg-cover bg-center overflow-hidden" style={{ backgroundImage: `url(${displayImage})` }} onMouseEnter={textEnter} onMouseLeave={textLeave}>
               <AnimatePresence>
                 {analyzing && (
                   <>
                     <TargetCursor className="left-10 top-14" />
-                    <motion.div
-                      className="absolute inset-0 flex flex-col items-center justify-center backdrop-blur-sm bg-black/40"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <motion.div
-                        animate={{
-                          scale: [1, 1.05, 1],
-                          rotate: [0, 2, -2, 0]
-                        }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        <ShinyText className="text-2xl">Analyzing your meal...</ShinyText>
-                      </motion.div>
-                      <motion.p
-                        className="mt-2 text-sm text-white/70"
-                        animate={{ opacity: [0.5, 1, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        Identifying ingredients, calculating macros, and generating insights
-                      </motion.p>
+                    <motion.div className="absolute inset-0 flex flex-col items-center justify-center backdrop-blur-sm bg-black/40">
+                      <ShinyText className="text-2xl font-bold uppercase tracking-widest">Scanning...</ShinyText>
                     </motion.div>
                   </>
                 )}
               </AnimatePresence>
             </motion.div>
 
-            <motion.div
-              className="mt-6 grid gap-4 md:grid-cols-2"
-              variants={staggerContainer}
-              initial="hidden"
-              animate="show"
-            >
+            <motion.div className="mt-6 grid gap-4 md:grid-cols-2" variants={staggerContainer} initial="hidden" animate="show">
               <motion.div variants={fadeInUp}>
-                <SpotlightCard className="bg-black/40">
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/60">Nutritional Balance</p>
-                  <div className="mt-3 flex items-center gap-3 text-2xl font-semibold">
-                    <motion.div
-                      animate={analyzing ? { scale: [1, 1.2, 1] } : {}}
-                      transition={{ duration: 1, repeat: analyzing ? Infinity : 0 }}
-                    >
-                      <TrendingUp className="h-6 w-6 text-accent-soft" />
-                    </motion.div>
-                    <span>{analyzing ? 'Calculating...' : hasAnalysisCompleted ? 'Optimized' : 'Pending'}</span>
+                <SpotlightCard className="bg-white/5 border-white/10" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                  <p className="text-xs uppercase tracking-[0.3em] text-white/40 font-mono">Nutritional Balance</p>
+                  <div className="mt-3 flex items-center gap-3 text-2xl font-black">
+                    <TrendingUp className="text-[#f54703]" />
+                    <span>{analyzing ? '...' : hasAnalysisCompleted ? 'Optimized' : 'Pending'}</span>
                   </div>
-                  <p className="mt-2 text-sm text-white/60">Macro and micronutrient distribution</p>
                 </SpotlightCard>
               </motion.div>
-
               <motion.div variants={fadeInUp}>
-                <SpotlightCard className="bg-black/40">
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/60">Analysis Status</p>
-                  <div className="mt-3 flex items-center gap-3 text-2xl font-semibold">
-                    <motion.div
-                      animate={analyzing ? { rotate: 360 } : {}}
-                      transition={{ duration: 2, repeat: analyzing ? Infinity : 0, ease: 'linear' }}
-                    >
-                      <CheckCircle className="h-6 w-6 text-accent-primary" />
-                    </motion.div>
+                <SpotlightCard className="bg-white/5 border-white/10" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                  <p className="text-xs uppercase tracking-[0.3em] text-white/40 font-mono">Status</p>
+                  <div className="mt-3 flex items-center gap-3 text-2xl font-black">
+                    <CheckCircle className="text-[#f54703]" />
                     <span>{analyzing ? 'Processing' : hasAnalysisCompleted ? 'Complete' : 'Ready'}</span>
                   </div>
-                  <p className="mt-2 text-sm text-white/60">AI vision model inference</p>
                 </SpotlightCard>
               </motion.div>
             </motion.div>
           </MagicBento>
 
-          <MagicBento className="flex flex-col items-center gap-6 text-center">
-            <CircularHealthScore score={liveScore} />
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <p className="text-sm uppercase tracking-[0.3em] text-white/60">Nutrition Score</p>
-              <GradientText className="text-3xl">{analyzing ? 'Calculating...' : hasAnalysisCompleted ? 'Analysis Complete' : 'Upload to begin'}</GradientText>
+          <MagicBento className="flex flex-col items-center gap-6 text-center border-white/10 bg-[#0d0d0e]/50">
+            <div onMouseEnter={textEnter} onMouseLeave={textLeave}>
+              <CircularHealthScore score={liveScore} />
+            </div>
+            <motion.div>
+              <p className="text-xs font-mono uppercase tracking-[0.3em] text-white/40 mb-2">Score</p>
+              <h3 className="text-3xl font-black uppercase tracking-tight">{analyzing ? 'Calculating...' : hasAnalysisCompleted ? 'Analysis Complete' : 'Upload to begin'}</h3>
             </motion.div>
-            <motion.p
-              className="text-white/70"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-            >
-              The nutrition score evaluates your meal based on macronutrient balance, ingredient quality, and overall nutritional value.
-            </motion.p>
+
             <AnimatePresence>
               {macros && hasAnalysisCompleted && (
-                <motion.div
-                  className="grid w-full grid-cols-3 gap-3 text-left text-sm text-white/70"
-                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -20, scale: 0.9 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                >
-                  {[
-                    { label: 'Carbs', value: macros.carbs },
-                    { label: 'Protein', value: macros.protein },
-                    { label: 'Fats', value: macros.fats }
-                  ].map((macro, idx) => (
-                    <motion.div
-                      key={macro.label}
-                      className="rounded-2xl border border-white/10 bg-black/40 p-3"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1 * idx }}
-                      whileHover={{ y: -3, scale: 1.05 }}
-                    >
-                      <p className="text-xs uppercase tracking-[0.3em] text-white/50">{macro.label}</p>
-                      <GradientText className="text-xl">{macro.value}g</GradientText>
+                <motion.div className="grid w-full grid-cols-3 gap-3 text-left text-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  {[{ label: 'Carbs', value: macros.carbs }, { label: 'Protein', value: macros.protein }, { label: 'Fats', value: macros.fats }].map((macro) => (
+                    <motion.div key={macro.label} className="rounded-2xl border border-white/10 bg-white/5 p-3 text-center" whileHover={{ scale: 1.05 }} onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                      <GradientText className="text-xl font-bold">{macro.value}g</GradientText>
+                      <p className="text-[10px] uppercase tracking-widest text-white/40 mt-1">{macro.label}</p>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -409,134 +321,66 @@ export default function MealAnalysisPage() {
 
         <AnimatePresence>
           {hasAnalysisCompleted && (
-            <motion.section
-              className="mt-10 grid gap-8 lg:grid-cols-2"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -40 }}
-              transition={{ duration: 0.8 }}
-            >
-              <MagicBento>
+            <motion.section className="mt-10 grid gap-8 lg:grid-cols-2" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}>
+              <MagicBento className="border-white/10 bg-[#0d0d0e]/50">
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm uppercase tracking-[0.3em] text-white/60">AI Recommendations</p>
-                  <motion.div
-                    animate={{ rotate: [0, 360] }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                  >
-                    <Zap className="text-accent-soft h-5 w-5" />
-                  </motion.div>
+                  <p className="text-xs font-mono uppercase tracking-[0.3em] text-white/40">AI Insight</p>
+                  <Zap className="text-[#f54703] h-5 w-5" />
                 </div>
-                <div className="min-h-[150px] rounded-2xl border border-white/10 bg-black/30 p-5 text-left">
-                  <motion.p
-                    className="text-base leading-relaxed"
-                    animate={{ opacity: [0.7, 1, 0.7] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >
-                    <GradientText>{adviceText}</GradientText>
-                  </motion.p>
+                <div className="min-h-[150px] rounded-2xl border border-white/5 bg-black/20 p-6 text-left mb-4" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                  <p className="text-lg font-light leading-relaxed opacity-90">{adviceText}</p>
                 </div>
+                <LegalDisclaimer />
               </MagicBento>
 
-              <MagicBento>
+              <MagicBento className="border-white/10 bg-[#0d0d0e]/50">
                 <div className="flex items-center justify-between mb-6">
-                  <p className="text-sm uppercase tracking-[0.3em] text-white/60">Detailed Analysis</p>
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <Sparkles className="text-accent-soft" />
-                  </motion.div>
+                  <p className="text-xs font-mono uppercase tracking-[0.3em] text-white/40">Details</p>
+                  <Sparkles className="text-[#f54703]" />
                 </div>
 
-                <motion.div
-                  className="space-y-6"
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="show"
-                >
-                  {result?.ingredients && result.ingredients.length > 0 && (
-                    <motion.div variants={fadeInUp}>
-                      <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-3">Detected Ingredients</p>
+                <div className="space-y-6">
+                  {result?.ingredients && (
+                    <div onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                      <p className="text-xs font-mono uppercase tracking-widest text-[#f54703] mb-3">Ingredients</p>
                       <div className="flex flex-wrap gap-2">
-                        {result.ingredients.map((ingredient, idx) => (
-                          <motion.span
-                            key={idx}
-                            className="px-3 py-1 rounded-full bg-white/10 text-sm text-white/80 border border-white/10"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.05 * idx }}
-                            whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.15)' }}
-                          >
-                            {ingredient}
-                          </motion.span>
+                        {result.ingredients.map((ing, idx) => (
+                          <span key={idx} className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-wide text-white/70">{ing}</span>
                         ))}
                       </div>
-                    </motion.div>
+                    </div>
                   )}
-
-                  {result?.strengths && result.strengths.length > 0 && (
-                    <motion.div variants={fadeInUp}>
-                      <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-3">Nutritional Strengths</p>
-                      <div className="space-y-2">
-                        {result.strengths.map((strength, idx) => (
-                          <motion.div
-                            key={idx}
-                            className="flex items-start gap-2 text-sm text-green-400"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 * idx }}
-                            whileHover={{ x: 5 }}
-                          >
-                            <span className="mt-1">✓</span>
-                            <span>{strength}</span>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {result?.improvements && result.improvements.length > 0 && (
-                    <motion.div variants={fadeInUp}>
-                      <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-3">Suggested Improvements</p>
-                      <div className="space-y-2">
-                        {result.improvements.map((improvement, idx) => (
-                          <motion.div
-                            key={idx}
-                            className="flex items-start gap-2 text-sm text-accent-soft"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 * idx }}
-                            whileHover={{ x: 5 }}
-                          >
-                            <span className="mt-1">→</span>
-                            <span>{improvement}</span>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-
                   {hydration && (
-                    <motion.div
-                      variants={fadeInUp}
-                      whileHover={{ scale: 1.02 }}
-                      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/70"
-                    >
-                      <motion.div
-                        animate={{ y: [0, -3, 0] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        <Droplet className="h-5 w-5 text-accent-soft" />
-                      </motion.div>
-                      Estimated hydration contribution: {hydration}%
-                    </motion.div>
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm font-bold uppercase tracking-wide text-white/70">
+                      <Droplet className="text-[#f54703]" /> Hydration Impact: {hydration}%
+                    </div>
                   )}
-                </motion.div>
+                </div>
               </MagicBento>
             </motion.section>
           )}
         </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+function FloatingShape({ color, size, top, left, right, bottom, delay }) {
+  return (
+    <motion.div
+      className="absolute rounded-full blur-[100px]"
+      style={{ backgroundColor: color, width: size, height: size, top, left, right, bottom }}
+      animate={{
+        y: [0, 50, 0],
+        x: [0, 30, 0],
+        scale: [1, 1.1, 1],
+      }}
+      transition={{
+        duration: 10,
+        delay: delay,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
+    />
   );
 }

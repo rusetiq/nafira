@@ -16,7 +16,7 @@ export default {
         },
       },
       fontFamily: {
-        display: ["Space Grotesk", "sans-serif"],
+        display: ["Bricolage Grotesque", "sans-serif"],
         body: ["Inter", "sans-serif"],
       },
       boxShadow: {

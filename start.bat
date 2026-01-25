@@ -8,10 +8,7 @@ echo =========================================
 echo   Starting Nafira App
 echo =========================================
 echo.
-echo IMPORTANT: Frontend requires Administrator privileges for port 80
-echo.
-echo Frontend:  http://localhost:80
-echo Backend:   http://localhost:5000
+echo App:       http://localhost:5000
 echo Vision AI: http://localhost:5001
 echo.
 echo Close the individual server windows or press Ctrl+C in them to stop.
@@ -37,22 +34,23 @@ if %errorlevel% equ 0 (
 REM Give the vision server a moment to spin up
 timeout /t 5 /nobreak >nul
 
+REM ---- Build Frontend (one-time) ----
+echo [2/3] Building Frontend (served by backend on :5000)...
+call npm run build:frontend
+if %errorlevel% neq 0 (
+    echo Frontend build failed. Exiting.
+    pause
+    exit /b 1
+)
+
 REM ---- Start Backend (Node/Express) ----
-echo [2/3] Starting Backend API...
-start "Nafira Backend" cmd /k "cd server && npm run dev"
-
-REM Small delay so windows appear in order
-timeout /t 3 /nobreak >nul
-
-REM ---- Start Frontend (React) ----
-echo [3/3] Starting Frontend...
-start "Nafira Frontend" cmd /k "npm start"
+echo [3/3] Starting App Server on :5000...
+start "Nafira App (Server)" cmd /k "cd server && set NODE_ENV=production && npm start"
 
 echo.
 echo All services have been launched:
 echo   - Vision Model Service (minimized)
-echo   - Backend Server
-echo   - Frontend Dev Server
+echo   - App Server (serves frontend + API on :5000)
 echo.
 echo You can close this launcher window now.
 echo.

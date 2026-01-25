@@ -1,9 +1,8 @@
+﻿import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Clock } from 'lucide-react';
+import { ArrowLeft, Clock, BookOpen, Share2, Bookmark, ChevronLeft } from 'lucide-react';
+import { useRef, useEffect, useState } from 'react';
 import MagicBento from '../components/MagicBento';
-import GradientText from '../components/GradientText';
-import DitheredBackground from '../components/DitheredBackground';
 
 const articles = {
     1: {
@@ -773,142 +772,183 @@ export default function ArticleDetailPage() {
     const navigate = useNavigate();
     const article = articles[id];
 
+    // Cursor Logic
+    const mouseX = useMotionValue(-100);
+    const mouseY = useMotionValue(-100);
+    const [cursorVariant, setCursorVariant] = useState("default");
+
+    useEffect(() => {
+        const moveCursor = (e) => {
+            mouseX.set(e.clientX);
+            mouseY.set(e.clientY);
+        }
+        window.addEventListener("mousemove", moveCursor);
+        return () => window.removeEventListener("mousemove", moveCursor);
+    }, [mouseX, mouseY]);
+
+    const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
+    const cursorX = useSpring(mouseX, springConfig);
+    const cursorY = useSpring(mouseY, springConfig);
+
+    const cursorVariants = {
+        default: {
+            height: 12, width: 12, x: -6, y: -6,
+            backgroundColor: "#fff", mixBlendMode: "difference"
+        },
+        hover: {
+            height: 60, width: 60, x: -30, y: -30,
+            backgroundColor: "transparent", border: "1px solid #fff",
+            mixBlendMode: "difference"
+        }
+    };
+
+    const textEnter = () => setCursorVariant("hover");
+    const textLeave = () => setCursorVariant("default");
+
     if (!article) {
         return (
-            <div className="min-h-screen bg-background-dark flex items-center justify-center">
-                <div className="text-white">Article not found</div>
+            <div className="min-h-screen bg-[#050505] flex items-center justify-center font-display">
+                <div className="text-white text-xl">Article not found</div>
             </div>
         );
     }
 
-    const getDifficultyColor = (difficulty) => {
-        switch (difficulty) {
-            case 'beginner': return 'bg-green-500/20 text-green-400';
-            case 'intermediate': return 'bg-yellow-500/20 text-yellow-400';
-            case 'advanced': return 'bg-red-500/20 text-red-400';
-            default: return 'bg-gray-500/20 text-gray-400';
-        }
-    };
-
     const renderContent = (content) => {
-        return content
-            .split('\n')
-            .filter(line => line.trim() !== '')
-            .map((line, idx) => {
-                // Skip the first h1 since we already show title
-                if (line.startsWith('# ') && idx < 3) return null;
-
-                // H1 headers
-                if (line.startsWith('# ')) {
-                    return <h1 key={idx} className="text-3xl font-bold mt-10 mb-4 text-white">{line.slice(2)}</h1>;
-                }
-
-                // H2 headers
-                if (line.startsWith('## ')) {
-                    return <h2 key={idx} className="text-2xl font-bold mt-8 mb-4 text-white border-b border-white/10 pb-2">{line.slice(3)}</h2>;
-                }
-
-                // H3 headers  
-                if (line.startsWith('### ')) {
-                    return <h3 key={idx} className="text-xl font-bold mt-6 mb-3 text-accent-primary">{line.slice(4)}</h3>;
-                }
-
-                // Bold line (entire line is bold)
-                if (line.startsWith('**') && line.endsWith('**') && !line.includes(':**')) {
-                    return <p key={idx} className="font-bold text-white mt-4 mb-2">{line.slice(2, -2)}</p>;
-                }
-
-                // Bold with colon (like **Protein:** description)
-                if (line.includes(':**')) {
-                    const parts = line.split(':**');
-                    const boldPart = parts[0].replace('**', '');
-                    const rest = parts[1]?.replace('**', '') || '';
-                    return (
-                        <p key={idx} className="mb-2 text-white/90">
-                            <span className="font-bold text-white">{boldPart}:</span>{rest}
-                        </p>
-                    );
-                }
-
-                // Inline bold text
-                if (line.includes('**')) {
-                    const parts = line.split(/(\*\*[^*]+\*\*)/g);
-                    return (
-                        <p key={idx} className="mb-3 text-white/80 leading-relaxed">
-                            {parts.map((part, i) => {
-                                if (part.startsWith('**') && part.endsWith('**')) {
-                                    return <strong key={i} className="text-white font-bold">{part.slice(2, -2)}</strong>;
-                                }
-                                return part;
-                            })}
-                        </p>
-                    );
-                }
-
-                // Numbered list
-                if (/^\d+\.\s/.test(line)) {
-                    const text = line.replace(/^\d+\.\s/, '');
-                    return (
-                        <div key={idx} className="flex gap-3 mb-2 ml-4">
-                            <span className="text-accent-primary font-bold">{line.match(/^\d+/)[0]}.</span>
-                            <span className="text-white/80">{text}</span>
-                        </div>
-                    );
-                }
-
-                // Bullet list
-                if (line.startsWith('- ')) {
-                    return (
-                        <div key={idx} className="flex gap-3 mb-2 ml-4">
-                            <span className="text-accent-primary">•</span>
-                            <span className="text-white/80">{line.slice(2)}</span>
-                        </div>
-                    );
-                }
-
-                // Regular paragraph
-                return <p key={idx} className="mb-3 text-white/80 leading-relaxed text-base">{line}</p>;
-            });
+        return content.split('\n').map((line, idx) => {
+            if (line.trim().startsWith('# ')) return <h1 key={idx} className="text-4xl sm:text-5xl font-black mb-8 mt-12 text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50 tracking-tight">{line.replace('# ', '')}</h1>;
+            if (line.trim().startsWith('## ')) return <h2 key={idx} className="text-2xl sm:text-3xl font-bold mb-6 mt-10 text-[#FD8B5D] tracking-tight">{line.replace('## ', '')}</h2>;
+            if (line.trim().startsWith('### ')) return <h3 key={idx} className="text-xl font-bold mb-4 mt-8 text-white/90">{line.replace('### ', '')}</h3>;
+            if (line.trim().startsWith('- ')) return <li key={idx} className="ml-6 mb-3 text-white/70 list-disc marker:text-[#f54703] pl-2">{line.replace('- ', '')}</li>;
+            if (line.trim().startsWith('**')) return <p key={idx} className="mb-4 text-lg text-white/90 font-bold">{line.replace(/\*\*/g, '')}</p>;
+            if (line.trim() === '') return <div key={idx} className="h-4" />;
+            return <p key={idx} className="mb-4 text-lg leading-relaxed text-white/70 font-light tracking-wide">{line}</p>;
+        });
     };
 
     return (
-        <div className="min-h-screen bg-background-dark px-3 sm:px-6 lg:px-10 pb-16 sm:pb-20 pt-6 sm:pt-10 text-white relative overflow-hidden">
-            <DitheredBackground />
+        <div className="relative min-h-screen bg-[#050505] text-[#f8fafc] font-display selection:bg-[#f54703] selection:text-white cursor-none overflow-x-hidden">
+            {/* Custom Cursor */}
+            <motion.div
+                className="hidden lg:block fixed top-0 left-0 rounded-full pointer-events-none z-[9999]"
+                variants={cursorVariants}
+                animate={cursorVariant}
+                style={{ translateX: cursorX, translateY: cursorY }}
+            />
 
-            <div className="relative z-10 max-w-4xl mx-auto">
+            {/* Ambient Background */}
+            <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+                <FloatingShape color="rgba(245, 71, 3, 0.15)" size={600} top="-20%" left="-10%" delay={0} />
+                <FloatingShape color="rgba(30, 64, 175, 0.1)" size={500} bottom="-10%" right="-10%" delay={2} />
+            </div>
+
+            {/* Navigation */}
+            <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 flex justify-between items-center bg-gradient-to-b from-[#050505] to-transparent pointer-events-none">
                 <motion.button
-                    onClick={() => navigate('/knowledge')}
-                    className="flex items-center gap-2 text-white/60 hover:text-white mb-6 transition-colors"
-                    whileHover={{ x: -5 }}
+                    onClick={() => navigate(-1)}
+                    className="group pointer-events-auto flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 hover:bg-white/10 transition-all cursor-none"
+                    onMouseEnter={textEnter} onMouseLeave={textLeave}
+                    whileHover={{ x: -4 }}
                 >
-                    <ArrowLeft size={20} />
-                    <span>Back to Articles</span>
+                    <ChevronLeft size={20} className="text-white/70 group-hover:text-white transition-colors" />
+                    <span className="text-sm font-bold uppercase tracking-widest text-white/70 group-hover:text-white transition-colors">Back</span>
                 </motion.button>
 
-                <MagicBento>
-                    <div className="flex flex-wrap items-center gap-3 mb-4">
-                        <span className="text-xs px-3 py-1 rounded-full bg-accent-primary/20 text-accent-primary">
-                            {article.category}
-                        </span>
-                        <span className={`text-xs px-3 py-1 rounded-full ${getDifficultyColor(article.difficulty)}`}>
-                            {article.difficulty}
-                        </span>
-                        <div className="flex items-center gap-2 text-sm text-white/60">
+                <div className="pointer-events-auto flex gap-4">
+                    <button className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#f54703] hover:border-[#f54703] transition-all group" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                        <Share2 size={18} className="text-white/70 group-hover:text-white" />
+                    </button>
+                    <button className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#f54703] hover:border-[#f54703] transition-all group" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                        <Bookmark size={18} className="text-white/70 group-hover:text-white" />
+                    </button>
+                </div>
+            </nav>
+
+            <main className="relative z-10 pt-32 pb-20 px-4 sm:px-8 max-w-7xl mx-auto">
+                {/* Header Section */}
+                <header className="max-w-4xl mx-auto mb-20 text-center">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#f54703]/30 bg-[#f54703]/10 mb-8"
+                    >
+                        <span className="w-2 h-2 rounded-full bg-[#f54703] animate-pulse" />
+                        <span className="text-xs font-bold uppercase tracking-widest text-[#f54703]">{article.category}</span>
+                    </motion.div>
+
+                    <motion.h1
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-5xl sm:text-7xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] mb-8"
+                        onMouseEnter={textEnter} onMouseLeave={textLeave}
+                    >
+                        {article.title}
+                    </motion.h1>
+
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="flex flex-wrap justify-center gap-6 text-sm font-mono uppercase tracking-wider text-white/50"
+                    >
+                        <div className="flex items-center gap-2">
                             <Clock size={16} />
                             <span>{article.readingTime} min read</span>
                         </div>
-                    </div>
+                        <div className="flex items-center gap-2">
+                            <BookOpen size={16} />
+                            <span className={
+                                article.difficulty === 'beginner' ? 'text-green-400' :
+                                    article.difficulty === 'intermediate' ? 'text-yellow-400' : 'text-red-400'
+                            }>{article.difficulty}</span>
+                        </div>
+                    </motion.div>
+                </header>
 
-                    <h1 className="text-3xl sm:text-4xl font-bold mb-6">
-                        <GradientText>{article.title}</GradientText>
-                    </h1>
+                {/* Content Container */}
+                <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="max-w-4xl mx-auto"
+                >
+                    <div className="p-1 rounded-[2.5rem] bg-gradient-to-br from-white/10 via-white/5 to-transparent">
+                        <div className="rounded-[2.4rem] bg-[#0d0d0e] p-8 sm:p-12 md:p-16 border border-white/5 shadow-2xl relative overflow-hidden">
+                            {/* Decorative gradient blob inside card */}
+                            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#f54703] opacity-[0.03] blur-[100px] rounded-full pointer-events-none" />
 
-                    <div className="article-content">
-                        {renderContent(article.content)}
+                            <article className="relative z-10">
+                                {renderContent(article.content)}
+                            </article>
+
+                            <div className="mt-16 pt-12 border-t border-white/10 flex justify-between items-end opacity-50">
+                                <span className="font-mono text-xs uppercase tracking-widest">Nafira Knowledge Base</span>
+                                <span className="font-display font-black text-2xl tracking-tighter">NAFIRA<span className="text-xs align-top">Â®</span></span>
+                            </div>
+                        </div>
                     </div>
-                </MagicBento>
-            </div>
+                </motion.div>
+            </main>
         </div>
     );
 }
 
+function FloatingShape({ color, size, top, left, right, bottom, delay }) {
+    return (
+        <motion.div
+            className="absolute rounded-full blur-[100px]"
+            style={{ backgroundColor: color, width: size, height: size, top, left, right, bottom }}
+            animate={{
+                y: [0, 50, 0],
+                x: [0, 30, 0],
+                scale: [1, 1.1, 1],
+            }}
+            transition={{
+                duration: 10,
+                delay: delay,
+                repeat: Infinity,
+                ease: "easeInOut"
+            }}
+        />
+    );
+}

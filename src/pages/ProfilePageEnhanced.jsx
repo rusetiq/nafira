@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Edit2, Save, X, User, Heart, Activity, Target } from 'lucide-react';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { Edit2, Save, X, User, Heart, Activity, Target, Zap } from 'lucide-react';
 import MagicBento from '../components/MagicBento';
 import SpotlightCard from '../components/SpotlightCard';
 import GradientText from '../components/GradientText';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import DitheredBackground from '../components/DitheredBackground';
 
 export default function ProfilePageEnhanced() {
   useAuth();
@@ -15,6 +15,39 @@ export default function ProfilePageEnhanced() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [processingPreference, setProcessingPreference] = useState('auto');
+
+  // Cursor Logic
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+  const [cursorVariant, setCursorVariant] = useState("default");
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    }
+    window.addEventListener("mousemove", moveCursor);
+    return () => window.removeEventListener("mousemove", moveCursor);
+  }, [mouseX, mouseY]);
+
+  const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
+
+  const cursorVariants = {
+    default: {
+      height: 12, width: 12, x: -6, y: -6,
+      backgroundColor: "#fff", mixBlendMode: "difference"
+    },
+    hover: {
+      height: 60, width: 60, x: -30, y: -30,
+      backgroundColor: "transparent", border: "1px solid #f54703",
+      mixBlendMode: "difference"
+    }
+  };
+
+  const textEnter = () => setCursorVariant("hover");
+  const textLeave = () => setCursorVariant("default");
 
   useEffect(() => {
     loadProfile();
@@ -77,11 +110,7 @@ export default function ProfilePageEnhanced() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background-dark flex items-center justify-center">
-        <div className="text-white text-xl">Loading profile...</div>
-      </div>
-    );
+    return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white/50 font-mono uppercase tracking-widest text-xs">Loading identity...</div>;
   }
 
   const calculateBMI = () => {
@@ -93,39 +122,58 @@ export default function ProfilePageEnhanced() {
   };
 
   return (
-    <div className="min-h-screen bg-background-dark px-6 pb-20 pt-10 text-white sm:px-10 lg:px-16 relative">
-      <DitheredBackground />
-      <div className="relative z-10">
-        <header className="flex flex-wrap items-center justify-between gap-4 mb-10">
+    <div className="min-h-screen bg-[#050505] px-6 pb-20 pt-10 text-white sm:px-10 lg:px-16 relative font-display cursor-none overflow-hidden">
+      {/* Custom Cursor */}
+      <motion.div
+        className="hidden lg:block fixed top-0 left-0 rounded-full pointer-events-none z-[9999]"
+        variants={cursorVariants}
+        animate={cursorVariant}
+        style={{ translateX: cursorX, translateY: cursorY }}
+      />
+
+      {/* Ambient Background */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <FloatingShape color="rgba(245, 71, 3, 0.05)" size={800} top="-10%" left="-10%" delay={0} />
+        <FloatingShape color="rgba(30, 64, 175, 0.05)" size={600} bottom="10%" right="-10%" delay={4} />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        <header className="flex flex-wrap items-end justify-between gap-4 mb-12">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-white/60">Your Profile</p>
-            <h1 className="mt-2 text-4xl font-semibold">
-              <GradientText>Metabolic Identity</GradientText>
+            <div className="flex items-center gap-3 mb-4">
+              <User size={20} className="text-[#f54703]" />
+              <p className="text-xs font-mono uppercase tracking-[0.2em] text-white/50">User Profile</p>
+            </div>
+            <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9]" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+              Metabolic<br />Identity
             </h1>
           </div>
           {!editing ? (
             <button
               onClick={() => setEditing(true)}
-              className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold uppercase tracking-wide transition hover:border-accent-soft"
+              className="flex items-center gap-2 rounded-full border border-white/20 hover:bg-white hover:text-black hover:border-white px-6 py-3 text-xs font-bold uppercase tracking-widest transition-all"
+              onMouseEnter={textEnter} onMouseLeave={textLeave}
             >
-              <Edit2 size={18} />
+              <Edit2 size={14} />
               Edit Profile
             </button>
           ) : (
             <div className="flex gap-3">
               <button
                 onClick={handleCancel}
-                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold uppercase tracking-wide transition hover:border-red-500"
+                className="flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-xs font-bold uppercase tracking-widest transition hover:border-red-500 hover:text-red-500"
+                onMouseEnter={textEnter} onMouseLeave={textLeave}
               >
-                <X size={18} />
+                <X size={14} />
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 rounded-full bg-accent-primary px-6 py-3 text-sm font-semibold uppercase tracking-wide shadow-glow transition hover:scale-[1.02] disabled:opacity-50"
+                className="flex items-center gap-2 rounded-full bg-[#f54703] text-black px-6 py-3 text-xs font-bold uppercase tracking-widest shadow-lg shadow-orange-900/20 transition hover:bg-white disabled:opacity-50"
+                onMouseEnter={textEnter} onMouseLeave={textLeave}
               >
-                <Save size={18} />
+                <Save size={14} />
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
@@ -134,181 +182,186 @@ export default function ProfilePageEnhanced() {
 
         <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
           {/* Main Profile Info */}
-          <MagicBento className="relative overflow-hidden">
-            <div className="absolute inset-0 opacity-40" aria-hidden>
-              <div className="absolute -top-10 right-16 h-56 w-56 rounded-full bg-accent-secondary/30 blur-[140px]" />
-              <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-accent-primary/30 blur-[160px]" />
-            </div>
-
-            <div className="relative space-y-6">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center">
-                  <User className="w-10 h-10 text-white" />
+          <MagicBento className="relative overflow-hidden bg-[#0d0d0e]/50 border-white/10 rounded-[2.5rem] p-8">
+            <div className="relative space-y-8">
+              <div className="flex items-center gap-6 mb-8">
+                <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-4xl font-black text-[#f54703]">
+                  {profile?.name?.charAt(0) || <User size={32} />}
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold">{profile?.name}</h2>
-                  <p className="text-white/60">{profile?.email}</p>
+                  <h2 className="text-3xl font-bold uppercase tracking-tight">{profile?.name}</h2>
+                  <p className="text-white/50 font-mono text-xs mt-1">{profile?.email}</p>
                 </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-sm uppercase tracking-[0.3em] text-white/60">Name</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#f54703]">Name</label>
                   {editing ? (
                     <input
                       type="text"
                       value={editData.name || ''}
                       onChange={(e) => handleChange('name', e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent-primary transition"
+                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#f54703] transition-colors"
+                      onMouseEnter={textEnter} onMouseLeave={textLeave}
                     />
                   ) : (
-                    <p className="text-lg">{profile?.name}</p>
+                    <p className="text-lg font-medium">{profile?.name}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm uppercase tracking-[0.3em] text-white/60">Age</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#f54703]">Age</label>
                   {editing ? (
                     <input
                       type="number"
                       value={editData.age || ''}
                       onChange={(e) => handleChange('age', parseInt(e.target.value))}
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent-primary transition"
+                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#f54703] transition-colors"
+                      onMouseEnter={textEnter} onMouseLeave={textLeave}
                     />
                   ) : (
-                    <p className="text-lg">{profile?.age || 'Not set'}</p>
+                    <p className="text-lg font-medium">{profile?.age || 'Not set'}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm uppercase tracking-[0.3em] text-white/60">Gender</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#f54703]">Gender</label>
                   {editing ? (
                     <select
                       value={editData.gender || ''}
                       onChange={(e) => handleChange('gender', e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent-primary transition"
+                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#f54703] transition-colors"
+                      onMouseEnter={textEnter} onMouseLeave={textLeave}
                     >
-                      <option value="">Select...</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Non-binary">Non-binary</option>
-                      <option value="Prefer not to say">Prefer not to say</option>
+                      <option value="" className="bg-black">Select...</option>
+                      <option value="Male" className="bg-black">Male</option>
+                      <option value="Female" className="bg-black">Female</option>
+                      <option value="Non-binary" className="bg-black">Non-binary</option>
+                      <option value="Prefer not to say" className="bg-black">Prefer not to say</option>
                     </select>
                   ) : (
-                    <p className="text-lg">{profile?.gender || 'Not set'}</p>
+                    <p className="text-lg font-medium">{profile?.gender || 'Not set'}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm uppercase tracking-[0.3em] text-white/60">Activity Level</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#f54703]">Activity Level</label>
                   {editing ? (
                     <select
                       value={editData.activity_level || ''}
                       onChange={(e) => handleChange('activity_level', e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent-primary transition"
+                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#f54703] transition-colors"
+                      onMouseEnter={textEnter} onMouseLeave={textLeave}
                     >
-                      <option value="">Select...</option>
-                      <option value="sedentary">Sedentary</option>
-                      <option value="light">Lightly Active</option>
-                      <option value="moderate">Moderately Active</option>
-                      <option value="very">Very Active</option>
-                      <option value="extreme">Extremely Active</option>
+                      <option value="" className="bg-black">Select...</option>
+                      <option value="sedentary" className="bg-black">Sedentary</option>
+                      <option value="light" className="bg-black">Lightly Active</option>
+                      <option value="moderate" className="bg-black">Moderately Active</option>
+                      <option value="very" className="bg-black">Very Active</option>
+                      <option value="extreme" className="bg-black">Extremely Active</option>
                     </select>
                   ) : (
-                    <p className="text-lg capitalize">{profile?.activity_level?.replace('_', ' ') || 'Not set'}</p>
+                    <p className="text-lg font-medium capitalize">{profile?.activity_level?.replace('_', ' ') || 'Not set'}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm uppercase tracking-[0.3em] text-white/60">Height (cm)</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#f54703]">Height (cm)</label>
                   {editing ? (
                     <input
                       type="number"
                       value={editData.height || ''}
                       onChange={(e) => handleChange('height', parseFloat(e.target.value))}
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent-primary transition"
+                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#f54703] transition-colors"
+                      onMouseEnter={textEnter} onMouseLeave={textLeave}
                     />
                   ) : (
-                    <p className="text-lg">{profile?.height || 'Not set'}</p>
+                    <p className="text-lg font-medium">{profile?.height || 'Not set'}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm uppercase tracking-[0.3em] text-white/60">Weight (kg)</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#f54703]">Weight (kg)</label>
                   {editing ? (
                     <input
                       type="number"
                       value={editData.weight || ''}
                       onChange={(e) => handleChange('weight', parseFloat(e.target.value))}
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent-primary transition"
+                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#f54703] transition-colors"
+                      onMouseEnter={textEnter} onMouseLeave={textLeave}
                     />
                   ) : (
-                    <p className="text-lg">{profile?.weight || 'Not set'}</p>
+                    <p className="text-lg font-medium">{profile?.weight || 'Not set'}</p>
                   )}
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm uppercase tracking-[0.3em] text-white/60">Dietary Preference</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#f54703]">Dietary Preference</label>
                   {editing ? (
                     <select
                       value={editData.dietary_preference || ''}
                       onChange={(e) => handleChange('dietary_preference', e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent-primary transition"
+                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#f54703] transition-colors"
+                      onMouseEnter={textEnter} onMouseLeave={textLeave}
                     >
-                      <option value="">Select...</option>
-                      <option value="omnivore">Omnivore</option>
-                      <option value="vegetarian">Vegetarian</option>
-                      <option value="vegan">Vegan</option>
-                      <option value="pescatarian">Pescatarian</option>
-                      <option value="keto">Keto</option>
-                      <option value="paleo">Paleo</option>
+                      <option value="" className="bg-black">Select...</option>
+                      <option value="omnivore" className="bg-black">Omnivore</option>
+                      <option value="vegetarian" className="bg-black">Vegetarian</option>
+                      <option value="vegan" className="bg-black">Vegan</option>
+                      <option value="pescatarian" className="bg-black">Pescatarian</option>
+                      <option value="keto" className="bg-black">Keto</option>
+                      <option value="paleo" className="bg-black">Paleo</option>
                     </select>
                   ) : (
-                    <p className="text-lg capitalize">{profile?.dietary_preference || 'Not set'}</p>
+                    <p className="text-lg font-medium capitalize">{profile?.dietary_preference || 'Not set'}</p>
                   )}
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm uppercase tracking-[0.3em] text-white/60">Goals</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#f54703]">Goals</label>
                   {editing ? (
                     <textarea
                       value={editData.goals || ''}
                       onChange={(e) => handleChange('goals', e.target.value)}
                       rows={3}
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent-primary transition resize-none"
+                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#f54703] transition-colors resize-none"
+                      onMouseEnter={textEnter} onMouseLeave={textLeave}
                     />
                   ) : (
-                    <p className="text-lg">{profile?.goals || 'Not set'}</p>
+                    <p className="text-lg font-medium opacity-80 leading-relaxed">{profile?.goals || 'Not set'}</p>
                   )}
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm uppercase tracking-[0.3em] text-white/60">Allergies</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#f54703]">Allergies</label>
                   {editing ? (
                     <input
                       type="text"
                       value={editData.allergies || ''}
                       onChange={(e) => handleChange('allergies', e.target.value)}
                       placeholder="e.g., Dairy, Nuts, Gluten"
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent-primary transition"
+                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#f54703] transition-colors"
+                      onMouseEnter={textEnter} onMouseLeave={textLeave}
                     />
                   ) : (
-                    <p className="text-lg">{profile?.allergies || 'None'}</p>
+                    <p className="text-lg font-medium">{profile?.allergies || 'None'}</p>
                   )}
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm uppercase tracking-[0.3em] text-white/60">Health Conditions</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#f54703]">Health Conditions</label>
                   {editing ? (
                     <input
                       type="text"
                       value={editData.health_conditions || ''}
                       onChange={(e) => handleChange('health_conditions', e.target.value)}
                       placeholder="e.g., Diabetes, Hypertension"
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent-primary transition"
+                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#f54703] transition-colors"
+                      onMouseEnter={textEnter} onMouseLeave={textLeave}
                     />
                   ) : (
-                    <p className="text-lg">{profile?.health_conditions || 'None'}</p>
+                    <p className="text-lg font-medium">{profile?.health_conditions || 'None'}</p>
                   )}
                 </div>
               </div>
@@ -317,17 +370,15 @@ export default function ProfilePageEnhanced() {
 
           {/* Stats + Settings Cards */}
           <div className="space-y-6">
-            <SpotlightCard className="bg-white/5">
+            <SpotlightCard className="bg-[#0d0d0e]/50 border-white/10 rounded-[2.5rem] p-6" onMouseEnter={textEnter} onMouseLeave={textLeave}>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-accent-primary/20 flex items-center justify-center">
-                  <Activity className="w-6 h-6 text-accent-primary" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/60">BMI</p>
-                  <GradientText className="text-2xl font-bold">{calculateBMI()}</GradientText>
-                </div>
+                <Activity className="w-5 h-5 text-[#f54703]" />
+                <p className="text-xs font-mono uppercase tracking-[0.2em] text-white/50">Body Mass</p>
               </div>
-              <p className="text-sm text-white/70">
+              <div className="mb-2">
+                <span className="text-5xl font-black">{calculateBMI()}</span>
+              </div>
+              <p className="text-xs font-bold uppercase tracking-widest text-white/40">
                 {calculateBMI() !== 'N/A' && parseFloat(calculateBMI()) < 18.5 && 'Underweight'}
                 {calculateBMI() !== 'N/A' && parseFloat(calculateBMI()) >= 18.5 && parseFloat(calculateBMI()) < 25 && 'Normal weight'}
                 {calculateBMI() !== 'N/A' && parseFloat(calculateBMI()) >= 25 && parseFloat(calculateBMI()) < 30 && 'Overweight'}
@@ -335,14 +386,15 @@ export default function ProfilePageEnhanced() {
               </p>
             </SpotlightCard>
 
-            <SpotlightCard className="bg-white/5">
-              <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-2">
-                Processing Mode
+            <SpotlightCard className="bg-[#0d0d0e]/50 border-white/10 rounded-[2.5rem] p-6" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+              <div className="flex items-center gap-3 mb-4">
+                <Zap className="w-5 h-5 text-[#f54703]" />
+                <p className="text-xs font-mono uppercase tracking-[0.2em] text-white/50">Processing</p>
+              </div>
+              <p className="text-xs text-white/50 mb-6 leading-relaxed">
+                Reroute neural inference compute.
               </p>
-              <p className="text-sm text-white/70 mb-4">
-                Choose where your meal images are processed. Device mode uses RTQVLM locally, cloud uses Gemini.
-              </p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 p-1 bg-white/5 rounded-full border border-white/5">
                 {[
                   { value: 'auto', label: 'Auto' },
                   { value: 'cloud', label: 'Cloud' },
@@ -352,9 +404,9 @@ export default function ProfilePageEnhanced() {
                     key={option.value}
                     type="button"
                     onClick={() => handleProcessingPreferenceChange(option.value)}
-                    className={`flex-1 rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-wide border transition ${processingPreference === option.value
-                        ? 'bg-accent-primary border-accent-primary text-black'
-                        : 'bg-white/5 border-white/15 text-white/70 hover:border-accent-soft'
+                    className={`flex-1 rounded-full px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${processingPreference === option.value
+                      ? 'bg-[#f54703] text-black shadow-lg shadow-orange-900/20'
+                      : 'text-white/40 hover:text-white'
                       }`}
                   >
                     {option.label}
@@ -363,36 +415,47 @@ export default function ProfilePageEnhanced() {
               </div>
             </SpotlightCard>
 
-            <SpotlightCard className="bg-white/5">
+            <SpotlightCard className="bg-[#0d0d0e]/50 border-white/10 rounded-[2.5rem] p-6" onMouseEnter={textEnter} onMouseLeave={textLeave}>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-accent-secondary/20 flex items-center justify-center">
-                  <Heart className="w-6 h-6 text-accent-secondary" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/60">Diet Type</p>
-                  <GradientText className="text-xl font-bold capitalize">
-                    {profile?.dietary_preference || 'Not set'}
-                  </GradientText>
-                </div>
+                <Heart className="w-5 h-5 text-[#f54703]" />
+                <p className="text-xs font-mono uppercase tracking-[0.2em] text-white/50">Dietary</p>
+              </div>
+              <div className="flex items-end justify-between">
+                <p className="text-2xl font-bold capitalize">{profile?.dietary_preference || 'Unspecified'}</p>
+                <div className="w-2 h-2 rounded-full bg-green-500 mb-2 animate-pulse" />
               </div>
             </SpotlightCard>
 
-            <SpotlightCard className="bg-white/5">
+            <SpotlightCard className="bg-[#0d0d0e]/50 border-white/10 rounded-[2.5rem] p-6" onMouseEnter={textEnter} onMouseLeave={textLeave}>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-accent-soft/20 flex items-center justify-center">
-                  <Target className="w-6 h-6 text-accent-soft" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/60">Activity</p>
-                  <GradientText className="text-xl font-bold capitalize">
-                    {profile?.activity_level?.replace('_', ' ') || 'Not set'}
-                  </GradientText>
-                </div>
+                <Target className="w-5 h-5 text-[#f54703]" />
+                <p className="text-xs font-mono uppercase tracking-[0.2em] text-white/50">Activity</p>
               </div>
+              <p className="text-2xl font-bold capitalize">{profile?.activity_level?.replace('_', ' ') || 'Unspecified'}</p>
             </SpotlightCard>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function FloatingShape({ color, size, top, left, right, bottom, delay }) {
+  return (
+    <motion.div
+      className="absolute rounded-full blur-[100px]"
+      style={{ backgroundColor: color, width: size, height: size, top, left, right, bottom }}
+      animate={{
+        y: [0, 50, 0],
+        x: [0, 30, 0],
+        scale: [1, 1.1, 1],
+      }}
+      transition={{
+        duration: 10,
+        delay: delay,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
+    />
   );
 }

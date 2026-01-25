@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -11,16 +11,96 @@
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background-color: #1b1b1b;
+  background-color: #050505;
   color: #f8fafc;
   min-height: 100vh;
-  background-image:
-    linear-gradient(135deg, rgba(245, 71, 3, 0.08) 25%, transparent 25%, transparent 50%, rgba(245, 71, 3, 0.08) 50%, rgba(245, 71, 3, 0.08) 75%, transparent 75%, transparent),
-    linear-gradient(135deg, rgba(253, 139, 93, 0.09) 25%, transparent 25%, transparent 50%, rgba(253, 139, 93, 0.09) 50%, rgba(253, 139, 93, 0.09) 75%, transparent 75%, transparent),
-    radial-gradient(circle at 0% 0%, rgba(255, 194, 153, 0.15), transparent 55%),
-    linear-gradient(140deg, #1b1b1b, #2f2f2f 60%, #1b1b1b);
-  background-size: 4px 4px, 4px 4px, 100% 100%, 100% 100%;
+  overflow-x: hidden;
 }
+
+@layer utilities {
+  .font-bricolage {
+    font-family: 'Bricolage Grotesque', sans-serif;
+  }
+}
+
+@layer components {
+
+  /* ... existing components ... */
+  .shiny-text {
+    @apply relative inline-flex items-center overflow-hidden font-display;
+    background: linear-gradient(120deg, #fff, #FD8B5D, #f54703, #fff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: shine 6s linear infinite;
+  }
+
+  /* FLUID GLASS EFFECT */
+  .liquid-glass {
+    @apply backdrop-blur-[40px] saturate-[180%];
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06),
+      inset 0 0 20px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .blob {
+    position: absolute;
+    filter: blur(80px);
+    z-index: 0;
+    opacity: 0.8;
+    animation: blob-bounce 10s infinite ease-in-out;
+  }
+
+  .blob-1 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #f54703 0%, transparent 70%);
+    top: -200px;
+    left: -200px;
+    animation-delay: 0s;
+  }
+
+  .blob-2 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #FD8B5D 0%, transparent 70%);
+    bottom: -100px;
+    right: -100px;
+    animation-delay: 2s;
+  }
+
+  .blob-3 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, #FFC299 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: 4s;
+  }
+}
+
+@keyframes blob-bounce {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+/* ... keep the rest ... */
 
 .app-shell {
   background: radial-gradient(circle at top, rgba(255, 117, 24, 0.12), transparent 40%), rgba(7, 7, 7, 0.9);
@@ -77,6 +157,19 @@ body {
 
   .fluid-glass {
     @apply rounded-3xl border border-white/15 bg-white/5 p-8 text-white shadow-2xl backdrop-blur-2xl;
+  }
+
+  .text-stroke-white {
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+  }
+
+  .text-stroke-primary {
+    -webkit-text-stroke: 1px #f54703;
+  }
+
+  .font-outline-2 {
+    -webkit-text-stroke: 2px currentColor;
+    color: transparent;
   }
 }
 

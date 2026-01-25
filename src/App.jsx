@@ -16,8 +16,12 @@ import ArticleDetailPage from './pages/ArticleDetailPage';
 import ShowcasePage from './pages/ShowcasePage';
 import Showcase2Page from './pages/Showcase2Page';
 import MenuOrderPage from './pages/MenuOrderPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
+import MissionPage from './pages/Mission';
 import Navigation from './components/Navigation';
 import VisionModelReadyToast from './components/VisionModelReadyToast';
+import ScrollToTop from './components/ScrollToTop';
 import api from './services/api';
 import './index.css';
 
@@ -71,7 +75,8 @@ function App() {
 
   return (
     <div className="app-shell min-h-screen text-white">
-      {isAuthenticated && !isShowcasePage && <Navigation />}
+      <ScrollToTop />
+      {(!isShowcasePage && isAuthenticated && location.pathname !== '/login') && <Navigation />}
       {isAuthenticated && !isShowcasePage && <VisionModelReadyToast />}
       <Routes>
         <Route path="/" element={<LandingPage />} />
@@ -159,6 +164,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/mission" element={<MissionPage />} />
       </Routes>
     </div>
   );

@@ -28,22 +28,33 @@ app.set('trust proxy', 1);
 
 initDatabase();
 
+// CORS: when using cookies/credentials, Access-Control-Allow-Origin cannot be "*".
+// Configure allowed origins via env:
+// - CORS_ORIGIN="http://localhost:3000,http://127.0.0.1:3000"
+// - or set REACT_APP_API_URL on frontend and mirror it here.
+const allowedOrigins = (
+  process.env.CORS_ORIGIN ||
+  // Default to same-origin on the single-server setup (frontend + API on :5000)
+  'http://localhost:5000,http://127.0.0.1:5000'
+)
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  res.header("Access-Control-Allow-Origin", origin || "*");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  if (req.method === "OPTIONS") return res.sendStatus(204);
-  next();
-});
+const corsOptions = {
+  origin(origin, cb) {
+    // Allow non-browser clients (no Origin header) like curl/postman.
+    if (!origin) return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    return cb(new Error(`CORS blocked origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(
   helmet({

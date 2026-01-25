@@ -1,5 +1,12 @@
 const getApiBaseUrl = () => {
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
   if (process.env.NODE_ENV === 'production') {
+    return '/api';
+  }
+  // If the frontend is served by the backend on :5000, use same-origin to avoid CORS entirely.
+  if (window.location.port === '5000') {
     return '/api';
   }
   const hostname = window.location.hostname;

@@ -1,24 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Sparkles, Target, Activity, Heart, Check } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
+import { ChevronRight, ChevronLeft, Sparkles, Target, Activity, Heart, Check, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import GradientText from '../components/GradientText';
-import DitheredBackground from '../components/DitheredBackground';
 
 const questions = [
   {
     id: 'welcome',
     type: 'welcome',
-    title: 'Welcome to Your Metabolic Journey',
-    subtitle: "Let's personalize your experience in just 2 minutes",
+    title: 'Metabolic Genesis',
+    subtitle: "Initialize your biological profile in 2 minutes",
     icon: Sparkles
   },
   {
     id: 'basics',
     type: 'form',
-    title: 'Tell us about yourself',
+    title: 'Biological Metrics',
+    subtitle: 'Baseline data for your metabolic twin',
     fields: [
       { name: 'age', label: 'Age', type: 'number', placeholder: '25', required: true },
       { name: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Non-binary', 'Prefer not to say'], required: true },
@@ -29,7 +28,7 @@ const questions = [
   {
     id: 'activity',
     type: 'quiz',
-    title: 'What is your activity level?',
+    title: 'Energy Expenditure',
     icon: Activity,
     field: 'activity_level',
     options: [
@@ -43,7 +42,7 @@ const questions = [
   {
     id: 'diet',
     type: 'quiz',
-    title: 'Dietary preference?',
+    title: 'Fuel Source Preference',
     icon: Heart,
     field: 'dietary_preference',
     options: [
@@ -58,7 +57,7 @@ const questions = [
   {
     id: 'goals',
     type: 'quiz',
-    title: 'What are your primary goals?',
+    title: 'System Objectives',
     icon: Target,
     field: 'goals',
     multiple: true,
@@ -74,8 +73,8 @@ const questions = [
   {
     id: 'health',
     type: 'form',
-    title: 'Any health considerations?',
-    subtitle: 'This helps us provide better recommendations',
+    title: 'System Constraints',
+    subtitle: 'Allergies and conditions',
     fields: [
       { name: 'allergies', label: 'Food Allergies', type: 'text', placeholder: 'e.g., Dairy, Nuts, Gluten', required: false },
       { name: 'health_conditions', label: 'Health Conditions', type: 'text', placeholder: 'e.g., Diabetes, Hypertension', required: false }
@@ -89,10 +88,43 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false);
   const [direction, setDirection] = useState(1);
   const { user } = useAuth();
-  useNavigate(); // Keep hook call for React rules, but don't assign
+  useNavigate();
 
   const currentQuestion = questions[currentStep];
   const isLastStep = currentStep === questions.length - 1;
+
+  // Cursor Logic
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+  const [cursorVariant, setCursorVariant] = useState("default");
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    }
+    window.addEventListener("mousemove", moveCursor);
+    return () => window.removeEventListener("mousemove", moveCursor);
+  }, [mouseX, mouseY]);
+
+  const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
+
+  const cursorVariants = {
+    default: {
+      height: 12, width: 12, x: -6, y: -6,
+      backgroundColor: "#fff", mixBlendMode: "difference"
+    },
+    hover: {
+      height: 60, width: 60, x: -30, y: -30,
+      backgroundColor: "transparent", border: "1px solid #f54703",
+      mixBlendMode: "difference"
+    }
+  };
+
+  const textEnter = () => setCursorVariant("hover");
+  const textLeave = () => setCursorVariant("default");
 
   const handleNext = async () => {
     if (isLastStep) {
@@ -113,16 +145,10 @@ export default function OnboardingPage() {
   const handleComplete = async () => {
     setLoading(true);
     try {
-      const profileData = {
-        ...answers,
-        onboarding_completed: true
-      };
-
+      const profileData = { ...answers, onboarding_completed: true };
       if (Array.isArray(profileData.goals)) {
         profileData.goals = profileData.goals.join(', ');
       }
-
-      // Convert string values to proper types for numeric fields
       const updateData = {
         name: profileData.name || user.name,
         allergies: profileData.allergies || '',
@@ -136,17 +162,12 @@ export default function OnboardingPage() {
         health_conditions: profileData.health_conditions,
         onboarding_completed: true
       };
-
-      // Remove undefined values
       Object.keys(updateData).forEach(key => {
         if (updateData[key] === undefined) {
           delete updateData[key];
         }
       });
-
-      // Use api.put() for consistent URL and auth handling
       await api.put('/user/profile', updateData);
-
       window.location.href = '/dashboard';
     } catch (error) {
       console.error('Onboarding error:', error);
@@ -156,10 +177,7 @@ export default function OnboardingPage() {
   };
 
   const handleAnswer = (field, value) => {
-    setAnswers(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setAnswers(prev => ({ ...prev, [field]: value }));
   };
 
   const handleMultipleAnswer = (field, value) => {
@@ -174,82 +192,51 @@ export default function OnboardingPage() {
 
   const canProceed = () => {
     if (currentQuestion.type === 'welcome') return true;
-
     if (currentQuestion.type === 'form') {
-      return currentQuestion.fields
-        .filter(f => f.required)
-        .every(f => answers[f.name]);
+      return currentQuestion.fields.filter(f => f.required).every(f => answers[f.name]);
     }
-
     if (currentQuestion.type === 'quiz') {
       if (currentQuestion.multiple) {
         return answers[currentQuestion.field]?.length > 0;
       }
       return !!answers[currentQuestion.field];
     }
-
     return true;
   };
 
   const slideVariants = {
-    enter: (direction) => ({
-      x: direction > 0 ? 50 : -50,
-      opacity: 0,
-      scale: 0.98
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1
-    },
-    exit: (direction) => ({
-      x: direction > 0 ? -50 : 50,
-      opacity: 0,
-      scale: 0.98
-    })
+    enter: (direction) => ({ x: direction > 0 ? 50 : -50, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (direction) => ({ x: direction > 0 ? -50 : 50, opacity: 0 })
   };
 
   return (
-    <div className="min-h-screen bg-background-dark text-white px-4 sm:px-6 py-8 sm:py-12 relative overflow-hidden">
-      <DitheredBackground />
-
+    <div className="min-h-screen bg-[#050505] text-white px-4 sm:px-6 py-8 sm:py-12 relative overflow-hidden font-display cursor-none">
+      {/* Custom Cursor */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="max-w-3xl mx-auto relative z-10"
-      >
-        <div className="mb-8 sm:mb-12">
-          <div className="flex justify-between items-center mb-3">
-            <motion.span
-              key={currentStep}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-sm font-medium text-white/60"
-            >
-              Step {currentStep + 1} of {questions.length}
-            </motion.span>
-            <motion.span
-              key={`${currentStep}-percent`}
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-sm font-medium text-accent-primary"
-            >
-              {Math.round(((currentStep + 1) / questions.length) * 100)}%
-            </motion.span>
+        className="hidden lg:block fixed top-0 left-0 rounded-full pointer-events-none z-[9999]"
+        variants={cursorVariants}
+        animate={cursorVariant}
+        style={{ translateX: cursorX, translateY: cursorY }}
+      />
+
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <FloatingShape color="rgba(245, 71, 3, 0.05)" size={800} top="-20%" right="-10%" delay={0} />
+        <FloatingShape color="rgba(30, 64, 175, 0.05)" size={600} bottom="-10%" left="10%" delay={4} />
+      </div>
+
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto relative z-10">
+        <div className="mb-8">
+          <div className="flex justify-between items-end mb-4">
+            <span className="text-[#f54703] font-mono text-xs uppercase tracking-[0.2em]">Step {currentStep + 1} / {questions.length}</span>
+            <span className="text-white/40 font-mono text-xs uppercase tracking-[0.2em]">{Math.round(((currentStep + 1) / questions.length) * 100)}% Complete</span>
           </div>
-          <div className="h-2 bg-white/5 rounded-full overflow-hidden backdrop-blur-sm border border-white/10">
+          <div className="h-2 bg-white/10 w-full overflow-hidden rounded-full">
             <motion.div
-              className="h-full bg-gradient-to-r from-accent-primary via-accent-secondary to-accent-primary bg-[length:200%_100%]"
+              className="h-full bg-[#f54703] rounded-full"
               initial={{ width: 0 }}
-              animate={{
-                width: `${((currentStep + 1) / questions.length) * 100}%`,
-                backgroundPosition: ['0% 0%', '100% 0%']
-              }}
-              transition={{
-                width: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
-                backgroundPosition: { duration: 2, repeat: Infinity, ease: 'linear' }
-              }}
+              animate={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
+              transition={{ duration: 0.5 }}
             />
           </div>
         </div>
@@ -262,97 +249,38 @@ export default function OnboardingPage() {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{
-              duration: 0.4,
-              ease: [0.4, 0, 0.2, 1]
-            }}
-            className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.03] backdrop-blur-xl p-6 sm:p-8 md:p-12 shadow-2xl"
+            transition={{ duration: 0.4 }}
+            className="bg-[#0d0d0e]/50 backdrop-blur-xl border border-white/10 p-8 sm:p-12 rounded-[3.5rem]"
           >
             {currentQuestion.type === 'welcome' && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                className="text-center space-y-5"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.3, type: 'spring', stiffness: 200, damping: 15 }}
-                  className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-accent-primary/30 to-accent-secondary/30 mb-2 relative"
-                >
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                    className="absolute inset-0 rounded-full bg-gradient-to-r from-accent-primary/20 to-transparent"
-                  />
-                  <currentQuestion.icon className="w-12 h-12 text-accent-primary relative z-10" />
-                </motion.div>
-                <div className="space-y-3">
-                  <GradientText className="text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1]">
-                    {currentQuestion.title}
-                  </GradientText>
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto"
-                  >
-                    {currentQuestion.subtitle}
-                  </motion.p>
+              <div className="text-center py-10" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                <div className="mb-8 inline-flex items-center justify-center">
+                  <Sparkles size={64} className="text-[#f54703]" />
                 </div>
-              </motion.div>
+                <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter mb-4 leading-[0.9]">{currentQuestion.title}</h1>
+                <p className="text-xl text-white/50 font-light">{currentQuestion.subtitle}</p>
+              </div>
             )}
 
             {currentQuestion.type === 'form' && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
-                className="space-y-8"
-              >
+              <div className="space-y-8">
                 <div className="text-center mb-8">
-                  <motion.h2
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-3xl sm:text-4xl font-bold text-white mb-3"
-                  >
-                    {currentQuestion.title}
-                  </motion.h2>
-                  {currentQuestion.subtitle && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.3 }}
-                      className="text-white/60"
-                    >
-                      {currentQuestion.subtitle}
-                    </motion.p>
-                  )}
+                  <h2 className="text-3xl font-bold uppercase tracking-tight mb-2" onMouseEnter={textEnter} onMouseLeave={textLeave}>{currentQuestion.title}</h2>
+                  <p className="text-white/50">{currentQuestion.subtitle}</p>
                 </div>
-                <div className="grid gap-5 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-2">
                   {currentQuestion.fields.map((field, idx) => (
-                    <motion.div
-                      key={field.name}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 * idx }}
-                      className={field.type === 'text' ? 'md:col-span-2' : ''}
-                    >
-                      <label className="block text-sm font-medium text-white/70 mb-2">
-                        {field.label} {field.required && <span className="text-accent-primary">*</span>}
-                      </label>
+                    <div key={field.name} className={field.type === 'text' ? 'md:col-span-2' : ''}>
+                      <label className="block text-xs font-bold uppercase tracking-widest text-[#f54703] mb-2">{field.label}</label>
                       {field.type === 'select' ? (
                         <select
                           value={answers[field.name] || ''}
                           onChange={(e) => handleAnswer(field.name, e.target.value)}
-                          className="w-full px-4 py-3.5 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent-primary focus:bg-white/10 transition-all duration-300 backdrop-blur-sm"
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-lg focus:outline-none focus:border-[#f54703] transition-colors"
+                          onMouseEnter={textEnter} onMouseLeave={textLeave}
                         >
-                          <option value="" className="bg-background-dark">Select...</option>
-                          {field.options.map(opt => (
-                            <option key={opt} value={opt} className="bg-background-dark">{opt}</option>
-                          ))}
+                          <option value="" className="bg-black">Select...</option>
+                          {field.options.map(opt => <option key={opt} value={opt} className="bg-black">{opt}</option>)}
                         </select>
                       ) : (
                         <input
@@ -360,43 +288,22 @@ export default function OnboardingPage() {
                           value={answers[field.name] || ''}
                           onChange={(e) => handleAnswer(field.name, e.target.value)}
                           placeholder={field.placeholder}
-                          className="w-full px-4 py-3.5 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-accent-primary focus:bg-white/10 transition-all duration-300 backdrop-blur-sm"
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-lg focus:outline-none focus:border-[#f54703] transition-colors placeholder:text-white/20"
+                          onMouseEnter={textEnter} onMouseLeave={textLeave}
                         />
                       )}
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {currentQuestion.type === 'quiz' && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
-                className="space-y-8"
-              >
-                <div className="text-center mb-8">
-                  {currentQuestion.icon && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.2, type: 'spring', stiffness: 200, damping: 15 }}
-                      className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 mb-6 backdrop-blur-sm border border-white/10"
-                    >
-                      <currentQuestion.icon className="w-10 h-10 text-accent-primary" />
-                    </motion.div>
-                  )}
-                  <motion.h2
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="text-3xl sm:text-4xl font-bold text-white"
-                  >
-                    {currentQuestion.title}
-                  </motion.h2>
+              <div className="space-y-8">
+                <div className="text-center mb-8" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                  <h2 className="text-3xl font-bold uppercase tracking-tight mb-2">{currentQuestion.title}</h2>
                 </div>
-                <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   {currentQuestion.options.map((option, idx) => {
                     const isSelected = currentQuestion.multiple
                       ? answers[currentQuestion.field]?.includes(option.value)
@@ -405,74 +312,69 @@ export default function OnboardingPage() {
                     return (
                       <motion.button
                         key={option.value}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.05 * idx }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
                         onClick={() => currentQuestion.multiple
                           ? handleMultipleAnswer(currentQuestion.field, option.value)
                           : handleAnswer(currentQuestion.field, option.value)
                         }
-                        className={`group relative p-5 rounded-2xl border-2 transition-all duration-300 text-left overflow-hidden ${isSelected
-                          ? 'border-accent-primary bg-gradient-to-br from-accent-primary/20 to-accent-secondary/10 shadow-lg shadow-accent-primary/20'
-                          : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
-                          }`}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        className={`text-left p-6 border transition-all rounded-3xl group ${isSelected ? 'border-[#f54703] bg-[#f54703]/10' : 'border-white/10 hover:border-white/30 bg-white/5'}`}
+                        onMouseEnter={textEnter} onMouseLeave={textLeave}
                       >
-                        <motion.div
-                          initial={false}
-                          animate={{
-                            scale: isSelected ? 1 : 0,
-                            opacity: isSelected ? 1 : 0
-                          }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute top-3 right-3 w-6 h-6 rounded-full bg-accent-primary flex items-center justify-center"
-                        >
-                          <Check size={14} className="text-white" />
-                        </motion.div>
-                        <div className="font-semibold text-white mb-1.5 pr-8">{option.label}</div>
-                        <div className="text-sm text-white/60">{option.desc}</div>
+                        <div className="flex justify-between items-start mb-2">
+                          <span className={`font-bold uppercase tracking-wider text-sm ${isSelected ? 'text-[#f54703]' : 'text-white'}`}>{option.label}</span>
+                          {isSelected && <Check size={16} className="text-[#f54703]" />}
+                        </div>
+                        <p className="text-xs text-white/40">{option.desc}</p>
                       </motion.button>
-                    );
+                    )
                   })}
                 </div>
-              </motion.div>
+              </div>
             )}
 
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex items-center justify-between mt-10 pt-6 border-t border-white/10"
-            >
-              <motion.button
-                whileHover={{ scale: currentStep === 0 ? 1 : 1.05 }}
-                whileTap={{ scale: currentStep === 0 ? 1 : 0.95 }}
+            <div className="flex items-center justify-between mt-12 pt-8 border-t border-white/10">
+              <button
                 onClick={handleBack}
                 disabled={currentStep === 0}
-                className="flex items-center gap-2 px-6 py-3 rounded-full text-white/70 hover:text-white hover:bg-white/5 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                className="text-white/40 hover:text-white disabled:opacity-20 transition-colors uppercase text-xs font-bold tracking-widest flex items-center gap-2"
+                onMouseEnter={textEnter} onMouseLeave={textLeave}
               >
-                <ChevronLeft size={20} />
-                <span className="font-medium">Back</span>
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: canProceed() && !loading ? 1.05 : 1 }}
-                whileTap={{ scale: canProceed() && !loading ? 0.95 : 1 }}
+                <ChevronLeft size={16} /> Back
+              </button>
+              <button
                 onClick={handleNext}
                 disabled={!canProceed() || loading}
-                className="relative flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-accent-primary to-accent-secondary text-white font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-accent-primary/30 overflow-hidden group"
+                className="bg-[#f54703] text-black px-8 py-3 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-white transition-colors disabled:opacity-50 flex items-center gap-2"
+                onMouseEnter={textEnter} onMouseLeave={textLeave}
               >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-accent-secondary to-accent-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  initial={false}
-                />
-                <span className="relative z-10">{loading ? 'Saving...' : isLastStep ? 'Complete' : 'Next'}</span>
-                {!loading && <ChevronRight size={20} className="relative z-10" />}
-              </motion.button>
-            </motion.div>
+                {loading ? 'Processing...' : isLastStep ? 'Initialize' : 'Next'} <ArrowRight size={16} />
+              </button>
+            </div>
           </motion.div>
         </AnimatePresence>
       </motion.div>
     </div>
+  );
+}
+
+function FloatingShape({ color, size, top, left, right, bottom, delay }) {
+  return (
+    <motion.div
+      className="absolute rounded-full blur-[100px]"
+      style={{ backgroundColor: color, width: size, height: size, top, left, right, bottom }}
+      animate={{
+        y: [0, 50, 0],
+        x: [0, 30, 0],
+        scale: [1, 1.1, 1],
+      }}
+      transition={{
+        duration: 10,
+        delay: delay,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
+    />
   );
 }
