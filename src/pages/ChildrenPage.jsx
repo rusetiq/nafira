@@ -1,4 +1,4 @@
-﻿import { useState, useEffect/*, useRef*/ } from 'react';
+import { useState, useEffect/*, useRef*/ } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
 import { /* Plus, TrendingUp, */ Baby, AlertCircle, Scale, Ruler, Utensils, Activity, ArrowLeft, Lightbulb, Trash2 /*, Calendar, User*/ } from 'lucide-react';
 // import MagicBento from '../components/MagicBento';

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
 import { Upload, Sparkles, CheckCircle, /*TrendingUp,*/ /*Droplet,*/ Zap, /*ArrowRight,*/ Lock, /*ScanLine,*/ Activity, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

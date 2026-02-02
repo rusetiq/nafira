@@ -101,7 +101,7 @@ export default function DashboardPage() {
     const file = files?.[0];
     if (!file) return;
     // setUploading(true);
-    const result = await startAnalysis(file);
+    await startAnalysis(file);
     // setLastRun(result);
     // setUploading(false);
     setModalOpen(false);

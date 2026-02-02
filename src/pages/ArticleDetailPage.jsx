@@ -1,4 +1,4 @@
-﻿import { motion, /* useScroll, useTransform, */ useSpring, useMotionValue } from 'framer-motion';
+import { motion, /* useScroll, useTransform, */ useSpring, useMotionValue } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { /* ArrowLeft, */ Clock, BookOpen, Share2, Bookmark, ChevronLeft } from 'lucide-react';
 import { /* useRef, */ useEffect, useState } from 'react';
