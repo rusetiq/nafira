@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
-import { Award, TrendingUp, Calendar, Download, Sparkles, ArrowUpRight } from 'lucide-react';
+import { motion, /*AnimatePresence,*/ useMotionValue, useSpring } from 'framer-motion';
+import { Award, TrendingUp, /*Calendar,*/ Download, /*Sparkles,*/ ArrowUpRight } from 'lucide-react';
 import MagicBento from '../components/MagicBento';
-import SpotlightCard from '../components/SpotlightCard';
-import GradientText from '../components/GradientText';
+// import SpotlightCard from '../components/SpotlightCard';
+// import GradientText from '../components/GradientText';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart } from 'recharts';
 import api from '../services/api';
 import { exportToPDF } from '../services/pdfService';
 import { formatLocalDateTime } from '../utils/timeUtils';
 
+/*
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   show: {
@@ -20,17 +21,21 @@ const fadeInUp = {
     }
   }
 };
+*/
 
+/*
 const staggerContainer = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
+    y: 0,
     transition: {
       staggerChildren: 0.1,
       delayChildren: 0.2
     }
   }
 };
+*/
 
 function TrendTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;

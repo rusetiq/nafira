@@ -1,35 +1,39 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
-import { Upload, Sparkles, CheckCircle, TrendingUp, Droplet, Zap, ArrowRight, Lock, ScanLine, Activity, Search } from 'lucide-react';
+import { Upload, Sparkles, CheckCircle, /*TrendingUp,*/ /*Droplet,*/ Zap, /*ArrowRight,*/ Lock, /*ScanLine,*/ Activity, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FluidGlassModal from '../components/FluidGlassModal';
 import MagicBento from '../components/MagicBento';
-import SpotlightCard from '../components/SpotlightCard';
-import ShinyText from '../components/ShinyText';
-import GradientText from '../components/GradientText';
-import TargetCursor from '../components/TargetCursor';
+// import SpotlightCard from '../components/SpotlightCard';
+// import ShinyText from '../components/ShinyText';
+// import GradientText from '../components/GradientText';
+// import TargetCursor from '../components/TargetCursor';
 
+/*
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] } }
 };
+*/
 
+/*
 const staggerContainer = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } }
 };
+*/
 
 export default function DemoPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [displayText, setDisplayText] = useState('');
   const [displayScore, setDisplayScore] = useState(0);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
-  const [isDragging, setIsDragging] = useState(false);
+  // const [isDragging, setIsDragging] = useState(false);
   const [hasAnalyzed, setHasAnalyzed] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
-  const fileInputRef = useRef(null);
+  // const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
   // Cursor Logic
@@ -339,9 +343,9 @@ export default function DemoPage() {
           <div className="p-8">
             <label
               className="flex flex-col items-center justify-center gap-4 p-12 rounded-3xl border-2 border-dashed border-white/10 hover:border-[#f54703] hover:bg-white/5 transition-all cursor-pointer group"
-              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleAnalyze(e.dataTransfer.files); }}
+              onDragOver={(e) => { e.preventDefault(); /* setIsDragging(true); */ }}
+              onDragLeave={() => { /* setIsDragging(false); */ }}
+              onDrop={(e) => { e.preventDefault(); /* setIsDragging(false); */ handleAnalyze(e.dataTransfer.files); }}
             >
               <Upload size={32} className="text-white/30 group-hover:text-[#f54703] transition-colors" />
               <div className="text-center">

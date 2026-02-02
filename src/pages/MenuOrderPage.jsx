@@ -5,8 +5,8 @@ import FluidGlassModal from '../components/FluidGlassModal';
 import MagicBento from '../components/MagicBento';
 import SpotlightCard from '../components/SpotlightCard';
 import ShinyText from '../components/ShinyText';
-import GradientText from '../components/GradientText';
-import api from '../services/api';
+// import GradientText from '../components/GradientText';
+// import api from '../services/api';
 
 const fadeInUp = {
     hidden: { opacity: 0, y: 30 },

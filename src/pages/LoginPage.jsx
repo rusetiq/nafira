@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogIn, UserPlus, Droplet, ArrowRight, Sparkles, ArrowLeft } from 'lucide-react';
+import { /*LogIn, UserPlus,*/ Droplet, ArrowRight, Sparkles, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import DitheredBackground from '../components/DitheredBackground';
 

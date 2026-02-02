@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
-import { Book, Clock, ArrowRight, BookOpen, Star, Brain } from 'lucide-react';
-import MagicBento from '../components/MagicBento';
-import GradientText from '../components/GradientText';
+import { /*Book,*/ Clock, ArrowRight, BookOpen, /*Star,*/ Brain } from 'lucide-react';
+// import MagicBento from '../components/MagicBento';
+// import GradientText from '../components/GradientText';
 import SpotlightCard from '../components/SpotlightCard';
 
 export default function KnowledgePage() {

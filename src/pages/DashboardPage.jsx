@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
-import { Upload, Coffee, CheckCircle, Heart, Users, TrendingUp, Plus, ArrowRight, Zap } from 'lucide-react';
-import GradientText from '../components/GradientText';
+import { motion, /*AnimatePresence,*/ useMotionValue, useSpring } from 'framer-motion';
+import { Upload, Coffee, /*CheckCircle,*/ Heart, Users, TrendingUp, /*Plus,*/ ArrowRight, Zap } from 'lucide-react';
+// import GradientText from '../components/GradientText';
 import SpotlightCard from '../components/SpotlightCard';
 import MagicBento from '../components/MagicBento';
 import FluidGlassModal from '../components/FluidGlassModal';
@@ -34,8 +34,8 @@ const staggerContainer = {
 
 export default function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [lastRun, setLastRun] = useState(null);
+  // const [uploading, setUploading] = useState(false);
+  // const [lastRun, setLastRun] = useState(null);
   const [aiInsight, setAiInsight] = useState('Loading your personalized insight...');
   const [greeting, setGreeting] = useState('');
   const [selectedMeal, setSelectedMeal] = useState(null);
@@ -100,18 +100,20 @@ export default function DashboardPage() {
   const handleFile = async (files) => {
     const file = files?.[0];
     if (!file) return;
-    setUploading(true);
+    // setUploading(true);
     const result = await startAnalysis(file);
-    setLastRun(result);
-    setUploading(false);
+    // setLastRun(result);
+    // setUploading(false);
     setModalOpen(false);
   };
 
-  const truncateText = (text, wordLimit = 5) => {
-    const words = text.split(' ');
-    if (words.length <= wordLimit) return text;
-    return words.slice(0, wordLimit).join(' ') + '...';
-  };
+  /*
+    const truncateText = (text, wordLimit = 5) => {
+      const words = text.split(' ');
+      if (words.length <= wordLimit) return text;
+      return words.slice(0, wordLimit).join(' ') + '...';
+    };
+  */
 
   if (isLoading) {
     return (

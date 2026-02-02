@@ -3,7 +3,7 @@ import { LogOut, Menu, X, ChevronDown, User, Sparkles, Camera, History, FileText
 import clsx from 'clsx';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useScroll/*, useTransform*/ } from 'framer-motion';
 
 const menuGroups = [
   {

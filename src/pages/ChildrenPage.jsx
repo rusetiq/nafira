@@ -1,8 +1,8 @@
-﻿import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect/*, useRef*/ } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
-import { Plus, TrendingUp, Baby, AlertCircle, Scale, Ruler, Utensils, Activity, ArrowLeft, Lightbulb, Trash2, Calendar, User } from 'lucide-react';
-import MagicBento from '../components/MagicBento';
-import GradientText from '../components/GradientText';
+import { /* Plus, TrendingUp, */ Baby, AlertCircle, Scale, Ruler, Utensils, Activity, ArrowLeft, Lightbulb, Trash2 /*, Calendar, User*/ } from 'lucide-react';
+// import MagicBento from '../components/MagicBento';
+// import GradientText from '../components/GradientText';
 import FluidGlassModal from '../components/FluidGlassModal';
 import api from '../services/api';
 
@@ -129,25 +129,29 @@ export default function ChildrenPage() {
         }
     };
 
-    const calculateAge = (dob) => {
-        // Simple age calculation for now
-        // Assuming DOB is passed, if age is passed directly use that
-        if (!dob) return 0;
-        const birth = new Date(dob);
-        const now = new Date();
-        const years = now.getFullYear() - birth.getFullYear();
-        // roughly
-        return years > 0 ? years : 0;
-    };
+    /*
+        const calculateAge = (dob) => {
+            // Simple age calculation for now
+            // Assuming DOB is passed, if age is passed directly use that
+            if (!dob) return 0;
+            const birth = new Date(dob);
+            const now = new Date();
+            const years = now.getFullYear() - birth.getFullYear();
+            // roughly
+            return years > 0 ? years : 0;
+        };
+        */
 
-    const getRiskColor = (risk) => {
-        switch (risk) {
-            case 'low': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
-            case 'moderate': return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
-            case 'high': return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
-            default: return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
-        }
-    };
+    /*
+        const getRiskColor = (risk) => {
+            switch (risk) {
+                case 'low': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+                case 'moderate': return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+                case 'high': return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
+                default: return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
+            }
+        };
+        */
 
     if (loading) {
         return (

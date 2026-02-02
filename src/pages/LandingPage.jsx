@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
-import { Sprout, Globe, HeartPulse, ScanLine, ArrowDown, Leaf, Activity, Heart, ArrowRight, Target } from 'lucide-react';
+import { Sprout, Globe, HeartPulse, ScanLine, ArrowDown, Leaf, Activity, /*Heart,*/ ArrowRight, Target } from 'lucide-react';
 
 const marqueeVariants = {
     animate: {

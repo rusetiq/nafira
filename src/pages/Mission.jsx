@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Target, Globe, Cpu, Heart, Zap, Shield, ArrowUpRight } from 'lucide-react';
+import { ArrowLeft, Target, Globe, Cpu, Heart, /*Zap, Shield,*/ ArrowUpRight } from 'lucide-react';
 
 const manifestoItems = [
     { title: "Transparent", desc: "No hidden algorithms. We believe in open science and clear, understandable data." },

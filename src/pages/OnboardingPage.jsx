@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Sparkles, Target, Activity, Heart, Check, ArrowRight } from 'lucide-react';
+import { /*ChevronRight,*/ ChevronLeft, Sparkles, Target, Activity, Heart, Check, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 

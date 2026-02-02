@@ -204,11 +204,12 @@ class ApiService {
     return this.handleResponse(response);
   }
 
-  async delete(endpoint) {
+  async delete(endpoint, data) {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'DELETE',
       headers: this.getAuthHeaders(),
       credentials: 'include',
+      body: JSON.stringify(data),
     });
     return this.handleResponse(response);
   }

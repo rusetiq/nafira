@@ -3,7 +3,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { Edit2, Save, X, User, Heart, Activity, Target, Zap } from 'lucide-react';
 import MagicBento from '../components/MagicBento';
 import SpotlightCard from '../components/SpotlightCard';
-import GradientText from '../components/GradientText';
+// import GradientText from '../components/GradientText';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
