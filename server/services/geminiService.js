@@ -13,10 +13,17 @@ const VISION_MODEL_PORT = process.env.VISION_MODEL_PORT || 5001;
 const VISION_MODEL_HOST = process.env.VISION_MODEL_HOST || 'localhost';
 const VISION_MODEL_URL = `http://${VISION_MODEL_HOST}:${VISION_MODEL_PORT}`;
 
-// OpenRouter free VISION models only
 const OPENROUTER_MODELS = [
-  'google/gemini-2.0-flash-exp:free',
-  'qwen/qwen-2.5-vl-7b-instruct:free'
+  'google/gemma-3-27b-it:free',
+  'nvidia/nemotron-nano-12b-v2-vl:free',
+  'qwen/qwen-2.5-vl-7b-instruct:free',
+  'google/gemma-3-12b-it:free',
+  'google/gemma-3-4b-it:free'
+];
+
+const GOOGLE_MODELS = [
+  'gemini-2.5-flash',
+  'gemini-1.5-flash'
 ];
 
 async function checkVisionModelAvailable() {
@@ -178,39 +185,48 @@ async function analyzeWithGoogleGemini(imagePath) {
   }
 
   try {
-    console.log('[GoogleGemini] Starting analysis with Google AI...');
-
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
+    // Prepare image once
     const imageBuffer = await sharp(imagePath)
       .resize(1024, 1024, { fit: 'inside' })
       .jpeg({ quality: 80 })
       .toBuffer();
-
     const base64Image = imageBuffer.toString('base64');
 
     const prompt = `Analyze this meal image and provide a detailed nutritional assessment. Return ONLY a JSON object with: { "name": "descriptive meal name", "score": health score 0-100, "carbs": grams, "protein": grams, "fats": grams, "calories": kcal, "hydration": 0-100, "advice": "brief nutrition advice", "ingredients": ["ingredient1", "ingredient2"], "strengths": ["strength1"], "improvements": ["improvement1"] }`;
 
-    const result = await model.generateContent([
-      prompt,
-      { inlineData: { mimeType: 'image/jpeg', data: base64Image } }
-    ]);
+    // Try models in sequence
+    for (const modelName of GOOGLE_MODELS) {
+      try {
+        console.log(`[GoogleGemini] Attempting analysis with ${modelName}...`);
+        const model = genAI.getGenerativeModel({ model: modelName });
 
-    const text = result.response.text();
-    console.log('[GoogleGemini] Raw response:', text);
+        const result = await model.generateContent([
+          prompt,
+          { inlineData: { mimeType: 'image/jpeg', data: base64Image } }
+        ]);
 
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
-      const normalized = normalizeAnalysis(parsed);
-      console.log('[GoogleGemini] Normalized analysis:', JSON.stringify(normalized, null, 2));
-      return normalized;
+        const text = result.response.text();
+        console.log(`[GoogleGemini] Raw response from ${modelName}:`, text);
+
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          const normalized = normalizeAnalysis(parsed);
+          console.log(`[GoogleGemini] Normalized analysis (${modelName}):`, JSON.stringify(normalized, null, 2));
+          return normalized;
+        }
+        console.warn(`[GoogleGemini] No JSON found in ${modelName} response.`);
+      } catch (innerError) {
+        console.error(`[GoogleGemini] Error with ${modelName}:`, innerError.message);
+        // Continue to next model in list
+      }
     }
 
-    console.warn('[GoogleGemini] No JSON found in response.');
+    console.error('[GoogleGemini] All Gemini models failed.');
   } catch (error) {
-    console.error('[GoogleGemini] Error:', error.message);
+    console.error('[GoogleGemini] Critical error:', error.message);
   }
 
   return null;
@@ -222,14 +238,55 @@ export async function analyzeMealWithAI(imagePath, processingPreference = 'auto'
 
     // Try OpenRouter first
     if (processingPreference !== 'device') {
-      const cloud = await analyzeWithOpenRouter(imagePath);
-      if (cloud) return cloud;
-      console.log('[Analyzer] OpenRouter failed, trying Google Gemini...');
+      const openRouterPromise = analyzeWithOpenRouter(imagePath);
 
-      // Try Google AI Gemini as backup
-      const gemini = await analyzeWithGoogleGemini(imagePath);
-      if (gemini) return gemini;
-      console.log('[Analyzer] Google Gemini failed, trying device...');
+      const timeoutPromise = new Promise((resolve) => {
+        setTimeout(() => resolve('TIMEOUT'), 20000);
+      });
+
+      // Race OpenRouter against the timeout
+      const raceResult = await Promise.race([openRouterPromise, timeoutPromise]);
+
+      if (raceResult !== 'TIMEOUT') {
+        // OpenRouter returned before timeout
+        if (raceResult) return raceResult;
+
+        console.log('[Analyzer] OpenRouter failed, trying Google Gemini...');
+        const gemini = await analyzeWithGoogleGemini(imagePath);
+        if (gemini) return gemini;
+      } else {
+        // Timeout occurred, OpenRouter is still pending
+        console.log('[Analyzer] OpenRouter timed out (20s), calling Gemini parallel...');
+        const geminiPromise = analyzeWithGoogleGemini(imagePath);
+
+        // Race the pending OpenRouter request against the new Gemini request
+        // We want the first *successful* (non-null) result
+        const parallelResult = await new Promise((resolve) => {
+          let resolved = false;
+          let failures = 0;
+
+          const handleSuccess = (res, source) => {
+            if (!resolved && res) {
+              resolved = true;
+              console.log(`[Analyzer] ${source} won the race with a valid result.`);
+              resolve(res);
+            } else if (!res) {
+              failures++;
+              if (failures === 2 && !resolved) {
+                console.log('[Analyzer] Both parallel requests failed.');
+                resolve(null);
+              }
+            }
+          };
+
+          openRouterPromise.then(res => handleSuccess(res, 'OpenRouter'));
+          geminiPromise.then(res => handleSuccess(res, 'GoogleGemini'));
+        });
+
+        if (parallelResult) return parallelResult;
+      }
+
+      console.log('[Analyzer] Cloud options failed, trying device...');
     }
 
     // Try device model

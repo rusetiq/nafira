@@ -61,7 +61,8 @@ export default function LandingPage() {
         offset: ["start start", "end end"]
     });
 
-    const heroTextY = useTransform(scrollYProgress, [0, 0.2], ["0%", "50%"]);
+    const smoothScroll = useSpring(scrollYProgress, { damping: 15, stiffness: 100, mass: 0.1 });
+    const heroTextY = useTransform(smoothScroll, [0, 0.2], ["0%", "50%"]);
 
     const mouseX = useMotionValue(-100);
     const mouseY = useMotionValue(-100);
@@ -173,7 +174,7 @@ export default function LandingPage() {
                     />
                 </div>
 
-                <motion.div style={{ y: heroTextY }} className="relative z-10 pointer-events-none">
+                <motion.div style={{ y: heroTextY }} className="relative z-10 pointer-events-none will-change-transform">
                     <motion.div
                         initial={{ scaleX: 0, originX: 0 }}
                         animate={{ scaleX: 1 }}
@@ -184,7 +185,7 @@ export default function LandingPage() {
                     <div className="overflow-hidden">
                         <motion.div variants={lettersContainer} initial="hidden" animate="visible" className="flex flex-wrap">
                             {Array.from("NUTRITIONAL").map((char, i) => (
-                                <motion.span key={i} variants={letterAnimation} className="text-[13vw] leading-[0.8] font-black uppercase tracking-tighter text-[#0d0d0e] inline-block">
+                                <motion.span key={i} variants={letterAnimation} className="text-[13vw] leading-[0.8] font-black uppercase tracking-tighter text-[#0d0d0e] inline-block font-grotesk">
                                     {char}
                                 </motion.span>
                             ))}
@@ -193,7 +194,7 @@ export default function LandingPage() {
                         <div className="relative inline-block">
                             <motion.div variants={lettersContainer} initial="hidden" animate="visible" className="flex flex-wrap relative z-10">
                                 {Array.from("CLARITY").map((char, i) => (
-                                    <motion.span key={i} variants={letterAnimation} className="text-[13vw] leading-[0.8] font-black uppercase tracking-tighter text-white inline-block drop-shadow-[0_4px_30px_rgba(0,0,0,0.2)]">
+                                    <motion.span key={i} variants={letterAnimation} className="text-[13vw] leading-[0.8] font-black uppercase tracking-tighter text-white inline-block drop-shadow-[0_4px_30px_rgba(0,0,0,0.2)] font-grotesk">
                                         {char}
                                     </motion.span>
                                 ))}
@@ -245,9 +246,9 @@ export default function LandingPage() {
                 <motion.div variants={marqueeVariants} animate="animate" className="flex items-center gap-12 sm:gap-20 text-white/90">
                     {[...Array(4)].map((_, i) => (
                         <div key={i} className="flex items-center gap-12 sm:gap-20">
-                            <span className="text-4xl sm:text-6xl font-black uppercase italic tracking-tighter">Mindful Nutrition</span>
+                            <span className="text-4xl sm:text-6xl font-bold uppercase italic tracking-tighter">Mindful Nutrition</span>
                             <span className="h-8 w-8 bg-accent-primary rounded-full" />
-                            <span className="text-4xl sm:text-6xl font-black uppercase tracking-tighter text-transparent text-stroke-white">Holistic Health</span>
+                            <span className="text-4xl sm:text-6xl font-bold uppercase tracking-tighter text-transparent text-stroke-white">Holistic Health</span>
                             <span className="h-8 w-8 bg-accent-primary rounded-full" />
                         </div>
                     ))}
@@ -267,7 +268,7 @@ export default function LandingPage() {
                         <div className="w-12 h-12 bg-accent-primary/20 rounded-full flex items-center justify-center mb-6">
                             <HeartPulse className="text-accent-primary" size={24} />
                         </div>
-                        <h3 className="text-3xl font-bold uppercase mb-4 tracking-tight">Well-being First</h3>
+                        <h3 className="text-3xl font-bold uppercase mb-4 tracking-tight font-grotesk">Well-being First</h3>
                         <p className="text-black/60 leading-relaxed font-medium">
                             Our goal aligns with UN SDG 3: Ensuring healthy lives and promoting well-being for all ages. We believe specific, personalized data is the key to preventative health.
                         </p>
@@ -295,9 +296,9 @@ export default function LandingPage() {
 
                     <div className="flex flex-col h-full justify-between relative z-10">
                         <div className="max-w-xl">
-                            <h2 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9] mb-6">
-                                See Food <br />
-                                <span className="text-transparent text-stroke-black">Differently.</span>
+                            <h2 className="text-5xl sm:text-7xl font-bold uppercase tracking-tighter leading-[0.9] mb-6 font-grotesk">
+                                See Food<br />
+                                <span className="text-stroke">Differently.</span>
                             </h2>
                             <p className="text-black/60 text-xl font-medium">
                                 Advanced computer vision for real-time nutritional analysis.
@@ -335,7 +336,7 @@ export default function LandingPage() {
                         <div className="mb-6 w-16 h-16 rounded-full bg-white text-black flex items-center justify-center">
                             <Activity size={28} />
                         </div>
-                        <h3 className="text-4xl sm:text-6xl font-black uppercase tracking-tighter mb-4">Try the Demo</h3>
+                        <h3 className="text-4xl sm:text-6xl font-bold uppercase tracking-tighter mb-4 font-grotesk">Try the Demo</h3>
                         <p className="text-white/70 max-w-md text-lg">
                             Experience the power of our AI analysis without an account. Upload a meal photo and get instant insights.
                         </p>
@@ -357,7 +358,7 @@ export default function LandingPage() {
                     onMouseEnter={textEnter} onMouseLeave={textLeave}
                 >
                     <Globe size={64} className="text-[#0d0d0e] mb-6 block mx-auto" />
-                    <h3 className="text-2xl font-black uppercase tracking-tight mb-2">Global Vision</h3>
+                    <h3 className="text-2xl font-bold uppercase tracking-tight mb-2 font-grotesk">Global Vision</h3>
                     <p className="text-black/60 font-medium">
                         Promoting sustainable eating habits for a healthier planet.
                     </p>
@@ -379,7 +380,7 @@ export default function LandingPage() {
                             </div>
                             <span className="text-sm font-mono uppercase tracking-widest text-white/50">Our Mission</span>
                         </div>
-                        <h3 className="text-4xl sm:text-6xl font-black uppercase tracking-tighter mb-4">The Manifesto</h3>
+                        <h3 className="text-4xl sm:text-6xl font-bold uppercase tracking-tighter mb-4 font-grotesk">The Manifesto</h3>
                         <p className="text-white/60 text-lg max-w-2xl font-medium">
                             We're building the operating system for human metabolism. Transparent, adaptive, and universal. Read our full mission statement.
                         </p>
@@ -398,7 +399,7 @@ export default function LandingPage() {
             <footer className="bg-[#0d0d0e] text-white py-20 px-6 sm:px-12 border-t-8 border-white">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
                     <div>
-                        <h2 className="text-6xl font-black uppercase tracking-tighter mb-6 relative inline-block">
+                        <h2 className="text-6xl font-bold uppercase tracking-tighter mb-6 relative inline-block font-grotesk">
                             Nafira
                             <span className="text-base align-top text-accent-primary ml-2">®</span>
                         </h2>

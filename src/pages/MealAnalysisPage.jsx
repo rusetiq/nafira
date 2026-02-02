@@ -241,7 +241,7 @@ export default function MealAnalysisPage() {
         <motion.div className="flex flex-wrap items-center justify-between gap-4 mb-10" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <div onMouseEnter={textEnter} onMouseLeave={textLeave}>
             <span className="text-[#f54703] font-mono text-xs uppercase tracking-[0.2em] mb-2 block">Meal Analysis</span>
-            <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tighter leading-[0.9]">
+            <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tighter leading-[0.9] font-grotesk">
               Food Intelligence
             </h1>
           </div>
@@ -301,7 +301,7 @@ export default function MealAnalysisPage() {
             </div>
             <motion.div>
               <p className="text-xs font-mono uppercase tracking-[0.3em] text-white/40 mb-2">Score</p>
-              <h3 className="text-3xl font-black uppercase tracking-tight">{analyzing ? 'Calculating...' : hasAnalysisCompleted ? 'Analysis Complete' : 'Upload to begin'}</h3>
+              <h3 className="text-3xl font-black uppercase tracking-tight font-grotesk">{analyzing ? 'Calculating...' : hasAnalysisCompleted ? 'Analysis Complete' : 'Upload to begin'}</h3>
             </motion.div>
 
             <AnimatePresence>

@@ -167,7 +167,7 @@ export default function HistoryPage() {
               <span className="text-white/50 font-mono text-xs uppercase tracking-[0.2em]">History & Progress</span>
             </motion.div>
 
-            <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9] mb-4" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+            <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9] mb-4 font-grotesk" onMouseEnter={textEnter} onMouseLeave={textLeave}>
               Your Journey
             </h1>
           </div>
@@ -192,7 +192,7 @@ export default function HistoryPage() {
           <MagicBento className="border-white/10 bg-[#0d0d0e]/50 min-h-[400px]">
             <div className="flex justify-between items-start mb-8">
               <div>
-                <h3 className="text-2xl font-bold uppercase tracking-tight">Performance</h3>
+                <h3 className="text-2xl font-bold uppercase tracking-tight font-grotesk">Performance</h3>
                 <p className="text-xs text-white/40 font-mono uppercase tracking-widest mt-1">Weekly Score Trend</p>
               </div>
             </div>
@@ -219,7 +219,7 @@ export default function HistoryPage() {
           <MagicBento className="border-white/10 bg-[#0d0d0e]/50 min-h-[400px]">
             <div className="flex justify-between items-start mb-8">
               <div>
-                <h3 className="text-2xl font-bold uppercase tracking-tight">Calories</h3>
+                <h3 className="text-2xl font-bold uppercase tracking-tight font-grotesk">Calories</h3>
                 <p className="text-xs text-white/40 font-mono uppercase tracking-widest mt-1">Daily Intake Distribution</p>
               </div>
             </div>
@@ -253,7 +253,7 @@ export default function HistoryPage() {
         <div className="grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
             <div className="mb-6 flex items-end justify-between">
-              <h2 className="text-3xl font-black uppercase tracking-tight">Timeline</h2>
+              <h2 className="text-3xl font-black uppercase tracking-tight font-grotesk">Timeline</h2>
               <div className="h-px flex-1 bg-white/10 mx-6 mb-2" />
             </div>
 
@@ -303,7 +303,7 @@ export default function HistoryPage() {
           <div className="lg:col-span-4 space-y-8">
             <div className="sticky top-10">
               <div className="mb-6">
-                <h2 className="text-xl font-bold uppercase tracking-tight">Milestones</h2>
+                <h2 className="text-xl font-bold uppercase tracking-tight font-grotesk">Milestones</h2>
               </div>
               <div className="grid gap-4">
                 {glowBadges.map((badge, idx) => (

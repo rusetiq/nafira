@@ -257,7 +257,7 @@ export default function OnboardingPage() {
                 <div className="mb-8 inline-flex items-center justify-center">
                   <Sparkles size={64} className="text-[#f54703]" />
                 </div>
-                <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter mb-4 leading-[0.9]">{currentQuestion.title}</h1>
+                <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter mb-4 leading-[0.9] font-grotesk">{currentQuestion.title}</h1>
                 <p className="text-xl text-white/50 font-light">{currentQuestion.subtitle}</p>
               </div>
             )}

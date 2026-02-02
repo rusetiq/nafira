@@ -70,7 +70,7 @@ export default function Mission() {
                 >
                     <ArrowLeft size={18} /> Back
                 </motion.button>
-                <div className="font-black text-xl tracking-tighter">NAFIRA MISSION</div>
+                <div className="font-black text-xl tracking-tighter font-grotesk">NAFIRA MISSION</div>
             </nav>
 
             {/* Section 1: Hero */}
@@ -86,14 +86,14 @@ export default function Mission() {
                     >
                         <h1
                             onMouseEnter={textEnter} onMouseLeave={textLeave}
-                            className="text-[12vw] leading-[0.8] font-black uppercase tracking-tighter text-transparent"
+                            className="text-[12vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent font-grotesk"
                             style={{ WebkitTextStroke: "2px #f54703" }}
                         >
                             De<br />code
                         </h1>
                         <h1
                             onMouseEnter={textEnter} onMouseLeave={textLeave}
-                            className="text-[12vw] leading-[0.8] font-black uppercase tracking-tighter text-white mix-blend-overlay mt-[-4vw]"
+                            className="text-[12vw] leading-[0.8] font-bold uppercase tracking-tighter text-white mix-blend-overlay mt-[-4vw] font-grotesk"
                         >
                             Life
                         </h1>
@@ -118,7 +118,7 @@ export default function Mission() {
             {/* Section 2: Statement */}
             <section className="py-32 px-4 md:px-12 bg-[#0a0a0a] relative z-10">
                 <div className="max-w-6xl mx-auto">
-                    <p className="text-4xl md:text-6xl font-bold leading-tight tracking-tight">
+                    <p className="text-4xl md:text-6xl font-bold leading-tight tracking-tight font-grotesk">
                         <span className="opacity-30">Current nutrition is broken.</span>{" "}
                         <span className="text-white" onMouseEnter={textEnter} onMouseLeave={textLeave}>
                             It relies on guesswork, fad diets, and generic advice that ignores your unique biology.
@@ -146,7 +146,7 @@ export default function Mission() {
 
                         <div>
                             <Target className="text-[#f54703] w-12 h-12 mb-6" />
-                            <h3 className="text-4xl font-bold uppercase tracking-tighter mb-4">Precision over Intuition</h3>
+                            <h3 className="text-4xl font-bold uppercase tracking-tighter mb-4 font-grotesk">Precision over Intuition</h3>
                             <p className="text-xl text-white/60 max-w-lg">
                                 Using advanced computer vision and metabolic modeling, we don't just guess what you're eating. We analyze it physically and chemically to predict its impact on <em>your</em> body.
                             </p>
@@ -168,7 +168,7 @@ export default function Mission() {
                         onMouseEnter={cardEnter} onMouseLeave={textLeave}
                     >
                         <Globe className="text-white w-8 h-8 mb-4" />
-                        <h4 className="text-2xl font-bold uppercase mb-2">Global Scale</h4>
+                        <h4 className="text-2xl font-bold uppercase mb-2 font-grotesk">Global Scale</h4>
                         <p className="text-sm text-white/50">From local ingredients to global health standards. We adapt to every culture.</p>
                     </motion.div>
 
@@ -182,7 +182,7 @@ export default function Mission() {
                         onMouseEnter={cardEnter} onMouseLeave={textLeave}
                     >
                         <Heart className="w-12 h-12 mb-4 group-hover:scale-110 transition-transform duration-300" />
-                        <h4 className="text-2xl font-black uppercase">User First</h4>
+                        <h4 className="text-2xl font-black uppercase font-grotesk">User First</h4>
                     </motion.div>
 
                     {/* Wide Card */}
@@ -198,7 +198,7 @@ export default function Mission() {
                             <Cpu className="w-8 h-8 text-[#f54703]" />
                         </div>
                         <div>
-                            <h4 className="text-xl font-bold uppercase mb-1">Compute at the Edge</h4>
+                            <h4 className="text-xl font-bold uppercase mb-1 font-grotesk">Compute at the Edge</h4>
                             <p className="text-sm text-white/50">Real-time processing for real-time decisions. No latency in your health journey.</p>
                         </div>
                         <ArrowUpRight className="ml-auto w-8 h-8 text-white/20 group-hover:text-[#f54703] group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
@@ -222,7 +222,7 @@ export default function Mission() {
                                 onMouseEnter={textEnter} onMouseLeave={textLeave}
                             >
                                 <div className="flex flex-col md:flex-row md:items-baseline gap-6 md:gap-20">
-                                    <h3 className="text-5xl md:text-7xl font-black uppercase text-transparent text-stroke-white group-hover:text-stroke-primary transition-all duration-500">
+                                    <h3 className="text-5xl md:text-7xl font-bold uppercase text-transparent text-stroke-white group-hover:text-stroke-primary transition-all duration-500 font-grotesk">
                                         {item.title}
                                     </h3>
                                     <p className="text-xl text-white/60 group-hover:text-white transition-colors max-w-md">
@@ -245,7 +245,7 @@ export default function Mission() {
                     className="absolute inset-0 bg-white rounded-full mix-blend-overlay opacity-20 blur-[100px]"
                 />
 
-                <h2 className="text-[10vw] font-black uppercase tracking-tighter leading-none text-center relative z-10">
+                <h2 className="text-[10vw] font-bold uppercase tracking-tighter leading-none text-center relative z-10 font-grotesk">
                     Join the <br /> Revolution
                 </h2>
 
@@ -267,16 +267,7 @@ export default function Mission() {
                 </div>
             </section>
 
-            <style>{`
-                .text-stroke-white {
-                    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
-                    color: transparent;
-                }
-                .text-stroke-primary {
-                    -webkit-text-stroke: 1px #f54703;
-                    color: transparent;
-                }
-            `}</style>
+
         </div>
     );
 }

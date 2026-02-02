@@ -132,7 +132,7 @@ export default function ProfilePage() {
               <User size={20} className="text-[#f54703]" />
               <span className="text-xs font-mono uppercase tracking-[0.2em] text-white/50">User Profile</span>
             </div>
-            <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9]" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+            <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9] font-grotesk" onMouseEnter={textEnter} onMouseLeave={textLeave}>
               Subject: {settings.name}
             </h1>
           </div>

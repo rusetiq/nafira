@@ -87,7 +87,6 @@ export default function TermsPage() {
 
     return (
         <div ref={containerRef} className="min-h-screen bg-[#050505] text-[#f0f0f0] font-display selection:bg-[#f54703] selection:text-white pb-20">
-            {/* Custom Nav */}
             <nav className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 py-6 mix-blend-difference">
                 <button
                     onClick={() => navigate('/')}
@@ -116,7 +115,7 @@ export default function TermsPage() {
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9]"
+                        className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] font-grotesk"
                     >
                         Terms of<br /><span className="text-white/20">Service</span>
                     </motion.h1>

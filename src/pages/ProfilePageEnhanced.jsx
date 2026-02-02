@@ -144,7 +144,7 @@ export default function ProfilePageEnhanced() {
               <User size={20} className="text-[#f54703]" />
               <p className="text-xs font-mono uppercase tracking-[0.2em] text-white/50">User Profile</p>
             </div>
-            <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9]" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+            <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9] font-grotesk" onMouseEnter={textEnter} onMouseLeave={textLeave}>
               Metabolic<br />Identity
             </h1>
           </div>
@@ -189,7 +189,7 @@ export default function ProfilePageEnhanced() {
                   {profile?.name?.charAt(0) || <User size={32} />}
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold uppercase tracking-tight">{profile?.name}</h2>
+                  <h2 className="text-3xl font-bold uppercase tracking-tight font-grotesk">{profile?.name}</h2>
                   <p className="text-white/50 font-mono text-xs mt-1">{profile?.email}</p>
                 </div>
               </div>

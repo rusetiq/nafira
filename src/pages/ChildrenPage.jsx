@@ -186,7 +186,7 @@ export default function ChildrenPage() {
                                 <ArrowLeft size={24} className="text-white/70 group-hover:text-white" />
                             </button>
                             <div>
-                                <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-none" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                                <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-none font-grotesk" onMouseEnter={textEnter} onMouseLeave={textLeave}>
                                     {selectedChild.name}
                                 </h1>
                                 <div className="flex items-center gap-4 mt-2 text-white/40 font-mono text-sm uppercase tracking-wider">

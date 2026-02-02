@@ -76,7 +76,7 @@ function App() {
   return (
     <div className="app-shell min-h-screen text-white">
       <ScrollToTop />
-      {(!isShowcasePage && isAuthenticated && location.pathname !== '/login') && <Navigation />}
+      {(!isShowcasePage && isAuthenticated && !['/login', '/terms', '/privacy', '/mission'].includes(location.pathname)) && <Navigation />}
       {isAuthenticated && !isShowcasePage && <VisionModelReadyToast />}
       <Routes>
         <Route path="/" element={<LandingPage />} />

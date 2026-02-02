@@ -170,7 +170,7 @@ export default function DemoPage() {
             <span className="text-xs font-bold uppercase tracking-widest text-white/60">Live Technology Demo</span>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] mb-8" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+          <h1 className="text-5xl sm:text-7xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] mb-8 font-grotesk" onMouseEnter={textEnter} onMouseLeave={textLeave}>
             See Food<br />
             <span className="text-transparent" style={{ webkitTextStroke: '1px #fff' }}>Differently.</span>
           </h1>

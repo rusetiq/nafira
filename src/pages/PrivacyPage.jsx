@@ -101,7 +101,7 @@ export default function PrivacyPage() {
                     <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                     <span>Back</span>
                 </button>
-                <div className="font-black text-xl tracking-tighter hidden sm:block">NAFIRA LEGAL</div>
+                <div className="font-black text-xl tracking-tighter hidden sm:block font-grotesk">NAFIRA LEGAL</div>
             </nav>
 
             <div className="max-w-4xl mx-auto px-6 pt-32 relative">
@@ -121,7 +121,7 @@ export default function PrivacyPage() {
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9]"
+                        className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] font-grotesk"
                     >
                         Privacy<br />Policy
                     </motion.h1>
@@ -150,7 +150,7 @@ export default function PrivacyPage() {
                                 <div className="relative">
                                     <div className="sticky top-32">
                                         <section.icon className="w-8 h-8 text-[#f54703] mb-4" />
-                                        <h2 className="text-3xl font-bold uppercase tracking-tight">{section.title}</h2>
+                                        <h2 className="text-3xl font-bold uppercase tracking-tight font-grotesk">{section.title}</h2>
                                         <span className="text-9xl font-black absolute -top-8 -left-8 text-white/[0.03] -z-10 select-none">
                                             0{idx + 1}
                                         </span>

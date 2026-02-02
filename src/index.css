@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Urbanist:wght@400;500;600;700;800;900&family=Darker+Grotesque:wght@300..900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,6 +6,12 @@
 
 :root {
   color-scheme: dark;
+}
+
+.text-stroke {
+  -webkit-text-stroke: 1px black;
+  color: transparent;
+  font-family: 'Inter', sans-serif;
 }
 
 body {
@@ -20,6 +26,22 @@ body {
 @layer utilities {
   .font-bricolage {
     font-family: 'Bricolage Grotesque', sans-serif;
+  }
+
+  .font-grotesk {
+    font-family: 'Space Grotesk', sans-serif !important;
+  }
+
+  .font-darker {
+    font-family: 'Darker Grotesque', sans-serif;
+  }
+
+  .font-display {
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .font-body {
+    font-family: 'Inter', sans-serif;
   }
 }
 
@@ -160,11 +182,13 @@ body {
   }
 
   .text-stroke-white {
-    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+    font-family: 'Inter', sans-serif;
   }
 
   .text-stroke-primary {
     -webkit-text-stroke: 1px #f54703;
+    font-family: 'Inter', sans-serif;
   }
 
   .font-outline-2 {

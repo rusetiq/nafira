@@ -158,7 +158,7 @@ export default function DashboardPage() {
               <span className="text-[#f54703] font-mono text-xs uppercase tracking-[0.2em]">Live Dashboard</span>
             </motion.div>
 
-            <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9] mb-2" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+            <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9] mb-2 font-grotesk" onMouseEnter={textEnter} onMouseLeave={textLeave}>
               {greeting || `Hello, ${user?.name || 'There'}`}
             </h1>
             <p className="text-white/40 text-lg font-light tracking-wide max-w-xl">
@@ -221,7 +221,7 @@ export default function DashboardPage() {
           <MagicBento className="min-h-[500px] border-white/10 bg-[#0d0d0e]/50">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h2 className="text-2xl font-bold uppercase tracking-tight">Recent Logs</h2>
+                <h2 className="text-2xl font-bold uppercase tracking-tight font-grotesk">Recent Logs</h2>
                 <p className="text-xs text-white/40 font-mono uppercase tracking-widest mt-1">Vision AI Analysis</p>
               </div>
               <button className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors">
@@ -275,7 +275,7 @@ export default function DashboardPage() {
                   <Coffee size={24} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold uppercase tracking-tight">Daily Focus</h3>
+                  <h3 className="text-xl font-bold uppercase tracking-tight font-grotesk">Daily Focus</h3>
                   <p className="text-xs text-white/40 font-mono uppercase tracking-widest mt-1">AI Generated Strategy</p>
                 </div>
               </div>
@@ -292,7 +292,7 @@ export default function DashboardPage() {
                 <span className="inline-block px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
                   UN Goal 3
                 </span>
-                <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">Well-Being First</h3>
+                <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 font-grotesk">Well-Being First</h3>
                 <p className="text-sm text-white/60 mb-6 max-w-sm">
                   Your journey directly contributes to the global goal of ensuring healthy lives and promoting well-being for all ages.
                 </p>

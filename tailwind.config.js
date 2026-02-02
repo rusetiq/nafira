@@ -16,8 +16,11 @@ export default {
         },
       },
       fontFamily: {
-        display: ["Bricolage Grotesque", "sans-serif"],
+        display: ["Urbanist", "sans-serif"],
         body: ["Inter", "sans-serif"],
+        grotesk: ["Space Grotesk", "sans-serif"],
+        darker: ["Darker Grotesque", "sans-serif"],
+        bricolage: ["Bricolage Grotesque", "sans-serif"],
       },
       boxShadow: {
         glow: "0 0 30px rgba(245, 71, 3, 0.4)",

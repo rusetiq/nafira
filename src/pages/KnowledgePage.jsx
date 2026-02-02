@@ -128,7 +128,7 @@ export default function KnowledgePage() {
                         <span className="text-xs font-bold uppercase tracking-widest text-white/60">Knowledge Hub</span>
                     </div>
 
-                    <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9] mb-6" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                    <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-[0.9] mb-6 font-grotesk" onMouseEnter={textEnter} onMouseLeave={textLeave}>
                         Evidence Based<br />
                         <span className="text-transparent" style={{ webkitTextStroke: '1px #f54703' }}>Nutrition Logic.</span>
                     </h1>
@@ -163,7 +163,7 @@ export default function KnowledgePage() {
                                         <span className="text-xs text-[#f54703] font-mono uppercase tracking-widest mb-2 block">
                                             {article.category}
                                         </span>
-                                        <h3 className="text-2xl font-bold leading-tight mb-4 group-hover:text-[#f54703] transition-colors">
+                                        <h3 className="text-2xl font-bold leading-tight mb-4 group-hover:text-[#f54703] transition-colors font-grotesk">
                                             {article.title}
                                         </h3>
                                     </div>

@@ -879,7 +879,7 @@ export default function ArticleDetailPage() {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl sm:text-7xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] mb-8"
+                        className="text-5xl sm:text-7xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] mb-8 font-grotesk"
                         onMouseEnter={textEnter} onMouseLeave={textLeave}
                     >
                         {article.title}

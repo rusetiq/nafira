@@ -120,7 +120,7 @@ export default function LoginPage() {
                 </div>
               </motion.div>
 
-              <h1 className="font-bricolage text-5xl sm:text-6xl font-bold mb-3 tracking-tight text-white drop-shadow-xl">
+              <h1 className="font-grotesk text-5xl sm:text-6xl font-bold mb-3 tracking-tight text-white drop-shadow-xl">
                 NAFIRA
               </h1>
               <p className="font-display text-accent-secondary/80 text-sm font-semibold tracking-widest uppercase">
