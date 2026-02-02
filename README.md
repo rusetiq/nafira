@@ -60,8 +60,6 @@ DB_PATH=./database/nafira.db
 UPLOAD_PATH=./uploads
 GEMINI_API_KEY=your-gemini-api-key-here
 HUGGINGFACE_API_KEY=your-huggingface-api-key-optional
-# Frontend origin(s) allowed to call the API with credentials (cookies/Authorization).
-# Comma-separated list.
 CORS_ORIGIN=http://localhost:5000,http://127.0.0.1:5000
 ```
 
@@ -82,6 +80,7 @@ Demo credentials:
 4. **Run Application**
 
 **Windows**: Right-click `start.bat` and select "Run as administrator"
+-# This probably won't work with the new commits, I have no idea why it can't.
 
 **Manual**:
 ```bash
@@ -100,6 +99,7 @@ The frontend is configured to run on port 80 for easy internet access.
 
 1. Find your local IP: `ipconfig`
 2. Access from other devices: `http://<your-local-ip>`
+-# Might give CORS error if not configured properly.
 
 ### Internet Access
 
@@ -239,8 +239,8 @@ npm run init-db
 
 ## License
 
-This project is private and proprietary.
+tbh idc yall can run your own instances
 
 ---
 
-**Built with ❤️ for metabolic health and wellness**
+**Built with ❤️ for metabolic health and wellness by rusetiq**
